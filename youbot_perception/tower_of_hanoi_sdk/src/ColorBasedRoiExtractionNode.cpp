@@ -109,6 +109,7 @@ int main(int argc, char* argv[]){
 	}
 
 
+	std::ofstream processingLogs[noOfRegions], frameDelayLogs[noOfRegions];
 
 	//initialize each color based region extractor
 	for (int i = 0; i<noOfRegions; i++) {
@@ -118,6 +119,18 @@ int main(int argc, char* argv[]){
 		pubMessageName << "extracted_region_"<<i+1;
 		extractedRoiPublisher[i] = nh.advertise< pcl::PointCloud<pcl::PointXYZRGB> >  (pubMessageName.str(), 1);
 		roiExtractor[i].setExtractedRegionPublisher(&extractedRoiPublisher[i]);
+
+		stringstream logFileName;
+		logFileName << "processing_log_test_" << i+1 << ".txt";
+		processingLogs[i].open(logFileName.str().c_str());
+
+		logFileName.str("");
+		logFileName << "frame_delay_log_test_" << i+1 << ".txt";
+		frameDelayLogs[i].open(logFileName.str().c_str());
+
+		roiExtractor[i].setProcessingLogs(&processingLogs[i]);
+		roiExtractor[i].setFrameDelayLogs(&frameDelayLogs[i]);
+
 	}
 
 

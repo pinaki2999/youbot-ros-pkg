@@ -36,6 +36,8 @@
 #include "util/PCLTypecaster.h"
 #include "core/ColoredPointCloud3D.h"
 
+#include <time.h>
+#include <fstream>
 namespace BRICS_3D {
 
 //ToDo update the extractor to also use some default V values to be more flexible.
@@ -62,6 +64,35 @@ private:
 	 * Utility object for type-casting data between BRICS_3D and PCL
 	 */
 	BRICS_3D::PCLTypecaster pclTypeCaster;
+
+	/**
+	 * To keep track of how many frames have processed
+	 */
+	int noOfFramesProcessed;
+
+	/**
+	 * Keep timings for starting and end of the proccing(only the core algorithm)
+	 */
+	clock_t startProcessing;
+	clock_t endProcessing;
+
+	/**
+	 * Keep timings between two consecutive frames being processed
+	 */
+	clock_t previousFrame;
+	clock_t currentFrame;
+
+	/*
+	clock_t start = clock();
+    //Code you want timed here
+	printf("Time elapsed: %f\n", ((double)clock() - start) / CLOCKS_PER_SEC);
+	 */
+
+	/*
+	 * filestreams to save the logs
+	 */
+	std::ofstream *processingLogs;
+	std::ofstream *frameDelayLogs;
 
 public:
 	ColorBasedRoiExtractor();
@@ -98,7 +129,15 @@ public:
 	 */
     void setExtractedRegionPublisher(ros::Publisher *extractedRegionPublisher);
 
+    void setFrameDelayLogs(std::ofstream *frameDelayLogs)
+    {
+        this->frameDelayLogs = frameDelayLogs;
+    }
 
+    void setProcessingLogs(std::ofstream *processingLogs)
+    {
+        this->processingLogs = processingLogs;
+    }
 
 };
 
