@@ -38,6 +38,10 @@
 
 #include <time.h>
 #include <fstream>
+#include <iomanip>
+#include <boost/timer.hpp>
+
+
 namespace BRICS_3D {
 
 //ToDo update the extractor to also use some default V values to be more flexible.
@@ -94,6 +98,7 @@ private:
 	std::ofstream *processingLogs;
 	std::ofstream *frameDelayLogs;
 
+	boost::timer processingTimer;
 public:
 	ColorBasedRoiExtractor();
 	virtual ~ColorBasedRoiExtractor();

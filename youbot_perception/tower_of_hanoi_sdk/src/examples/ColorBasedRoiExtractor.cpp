@@ -22,7 +22,7 @@
 namespace BRICS_3D {
 
 ColorBasedRoiExtractor::ColorBasedRoiExtractor() {
-	noOfFramesProcessed=0;
+	this->noOfFramesProcessed=0;
 }
 
     ros::Publisher* ColorBasedRoiExtractor::getExtractedRegionPublisher() const
@@ -47,22 +47,12 @@ void ColorBasedRoiExtractor::initializeLimits(float minLimitH, float maxLimitH, 
 	this->hsvBasedRoiExtractor.setMaxH(maxLimitH);
 	this->hsvBasedRoiExtractor.setMinS(minLimitS);
 	this->hsvBasedRoiExtractor.setMaxS(maxLimitS);
+	this->noOfFramesProcessed=0;
 }
 
 void ColorBasedRoiExtractor::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 
-	noOfFramesProcessed++;
 
-	if(noOfFramesProcessed!=1){
-		currentFrame=clock();
-
-			*frameDelayLogs << ((double)currentFrame - previousFrame) / CLOCKS_PER_SEC;
-
-		previousFrame=currentFrame;
-
-	} else {
-		previousFrame=clock();
-	}
 
 //	ROS_INFO("\ntransferred kinect_raw message successfully...... :)");
 
@@ -77,17 +67,38 @@ void ColorBasedRoiExtractor::kinectCloudCallback(const sensor_msgs::PointCloud2 
     //Transform sensor_msgs::PointCloud2 msg to pcl::PointCloud
     pcl::fromROSMsg (cloud, *cloud_xyz_rgb_ptr);
 
+
+
+	if(this->noOfFramesProcessed!=1 && this->noOfFramesProcessed<100 ){
+		this->currentFrame=clock();
+
+			*frameDelayLogs << this->noOfFramesProcessed << "\t"<<  cloud_xyz_rgb_ptr->size()<< "\t" <<
+							((double)currentFrame - (double)previousFrame) / CLOCKS_PER_SEC<< "\n";
+
+			this->previousFrame=this->currentFrame;
+
+	} else {
+		this->previousFrame=clock();
+	}
+
     // cast PCL to BRICS_3D type
     pclTypeCaster.convertToBRICS3DDataType(cloud_xyz_rgb_ptr, in_cloud);
     ROS_INFO("Size of input cloud: %d ", in_cloud->getSize());
 
     //-------------------------------------------------------------------------------------------
 	//perform HSV color based extraction
-    startProcessing=clock();
+    //startProcessing=clock();
+    processingTimer.restart();
 	hsvBasedRoiExtractor.extractColorBasedROI(in_cloud, extracted_cloud);
-	endProcessing=clock();
+	double processing_time = processingTimer.elapsed();
+	//endProcessing=clock();
 	ROS_INFO("Size of extracted cloud : %d ", extracted_cloud->getSize());
-	*processingLogs << in_cloud->getSize() << "\t"<< ((double)endProcessing - startProcessing) / CLOCKS_PER_SEC;
+
+	if(noOfFramesProcessed<100)
+	*processingLogs  << this->noOfFramesProcessed << "\t" << cloud_xyz_rgb_ptr->size() << "\t"<<
+					processing_time << "\t" <<"\n";
+						//((double)endProcessing - (double)startProcessing) / CLOCKS_PER_SEC << "\n";
+
 	//-------------------------------------------------------------------------------------------
 
 	//convert back to PCl format for publishing
@@ -103,8 +114,13 @@ void ColorBasedRoiExtractor::kinectCloudCallback(const sensor_msgs::PointCloud2 
 		delete in_cloud;
 		delete extracted_cloud;
 
-		if(noOfFramesProcessed==100){
-			exit(0);
+//		ROS_INFO("no of frames processed %d",noOfFramesProcessed);
+
+		this->noOfFramesProcessed++;
+
+		if(noOfFramesProcessed>100){
+			ROS_WARN("Logging Completed");
+//			exit(0);
 		}
 
 }

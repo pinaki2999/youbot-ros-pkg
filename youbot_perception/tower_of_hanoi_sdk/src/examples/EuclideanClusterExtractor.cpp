@@ -23,6 +23,7 @@ namespace BRICS_3D{
 EuclideanClusterExtractor::EuclideanClusterExtractor() {
 	centroid3DEstimator = new BRICS_3D::Centroid3D();
 	maxNoOfObjects = 3;
+	this->noOfFramesProcessed=0;
 }
 
 ros::Publisher *EuclideanClusterExtractor::getExtractedClusterPublisher() const
@@ -38,6 +39,7 @@ int EuclideanClusterExtractor::getMaxNoOfObjects() const
 void EuclideanClusterExtractor::setMaxNoOfObjects(int maxNoOfObjects)
 {
 	this->maxNoOfObjects = maxNoOfObjects;
+	this->noOfFramesProcessed=0;
 }
 
 void EuclideanClusterExtractor::setExtractedClusterPublisher(ros::Publisher *extractedClusterPublisher){
@@ -55,22 +57,42 @@ void EuclideanClusterExtractor::kinectCloudCallback(const sensor_msgs::PointClou
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
 
-
-
-
-
     //Transform sensor_msgs::PointCloud2 msg to pcl::PointCloud
     pcl::fromROSMsg (cloud, *cloud_xyz_rgb_ptr);
 
     if(cloud_xyz_rgb_ptr->size() > this->euclideanClusterExtractor.getMinClusterSize()){
+
+
+    	if(this->noOfFramesProcessed!=1 && this->noOfFramesProcessed<100 ){
+    		this->currentFrame=clock();
+
+    			*frameDelayLogs << this->noOfFramesProcessed << "\t"<<  cloud_xyz_rgb_ptr->size() << "\t" <<
+    							((double)currentFrame - (double)previousFrame) / CLOCKS_PER_SEC<< "\n";
+
+    			this->previousFrame=this->currentFrame;
+
+    	} else {
+    		this->previousFrame=clock();
+    	}
+
         BRICS_3D::PointCloud3D *in_cloud = new BRICS_3D::PointCloud3D();
         std::vector<BRICS_3D::PointCloud3D*> extracted_clusters;
     // cast PCL to BRICS_3D type
     pclTypecaster.convertToBRICS3DDataType(cloud_xyz_rgb_ptr, in_cloud);
 
+    //-------------------------------------------------------------------------------------------
     //extract the clusters
+    startProcessing=clock();
     euclideanClusterExtractor.extractClusters(in_cloud, &extracted_clusters);
+	endProcessing=clock();
     ROS_INFO("No of clusters found: %d", extracted_clusters.size());
+	if(noOfFramesProcessed<100)
+	*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_rgb_ptr->size() << "\t"<<
+						((double)endProcessing - (double)startProcessing) / CLOCKS_PER_SEC <<
+						"\t" << extracted_clusters.size() << "\n";
+	//-------------------------------------------------------------------------------------------
+
+
     //Publish the extracted clusters
 	pcl::PointCloud<pcl::PointXYZ>::Ptr tempCloud(new pcl::PointCloud<pcl::PointXYZ>());
 	int regions;
@@ -104,6 +126,16 @@ void EuclideanClusterExtractor::kinectCloudCallback(const sensor_msgs::PointClou
     delete(in_cloud);
     extracted_clusters.clear();
     }
+
+    //		ROS_INFO("no of frames processed %d",noOfFramesProcessed);
+
+    		this->noOfFramesProcessed++;
+
+    		if(noOfFramesProcessed>100){
+    			ROS_WARN("Logging Completed");
+ //   			exit(0);
+    		}
+
 
 }
 

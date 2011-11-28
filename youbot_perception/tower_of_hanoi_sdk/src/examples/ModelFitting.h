@@ -43,7 +43,7 @@
 
 
 #include <Eigen/Geometry>
-
+#include <fstream>
 
 namespace BRICS_3D {
 
@@ -95,6 +95,38 @@ class ModelFitting {
 	float xtranslation;
 	float ytranslation;
 	float ztranslation;
+
+
+
+	/**
+	 * To keep track of how many frames have processed
+	 */
+	int noOfFramesProcessed;
+
+	/**
+	 * Keep timings for starting and end of the proccing(only the core algorithm)
+	 */
+	clock_t startProcessing;
+	clock_t endProcessing;
+
+	/**
+	 * Keep timings between two consecutive frames being processed
+	 */
+	clock_t previousFrame;
+	clock_t currentFrame;
+
+	/*
+	clock_t start = clock();
+    //Code you want timed here
+	printf("Time elapsed: %f\n", ((double)clock() - start) / CLOCKS_PER_SEC);
+	 */
+
+	/*
+	 * filestreams to save the logs
+	 */
+	std::ofstream *processingLogs;
+	std::ofstream *frameDelayLogs;
+
 
 	Eigen::Matrix4f* bestTransformation;
 
@@ -152,6 +184,7 @@ class ModelFitting {
 
 	}
 
+
 public:
 
 	ModelFitting();
@@ -171,6 +204,18 @@ public:
 	void setModelPublisher(ros::Publisher *pub){
 		this->modelPublisher = pub;
 	}
+
+
+    void setFrameDelayLogs(std::ofstream *frameDelayLogs)
+    {
+        this->frameDelayLogs = frameDelayLogs;
+    }
+
+    void setProcessingLogs(std::ofstream *processingLogs)
+    {
+        this->processingLogs = processingLogs;
+        this->noOfFramesProcessed=0;
+    }
 
 };
 

@@ -80,6 +80,8 @@ int main(int argc, char* argv[]){
 		}
 	}
 
+	std::ofstream processingLogs[noOfRegions][maxNoOfObjects], frameDelayLogs[noOfRegions][maxNoOfObjects];
+
 	//subscribe to kinect point cloud messages
 	ros::Subscriber  objectClusterSubscriber[noOfRegions*maxNoOfObjects];
 	int count = 0;
@@ -92,6 +94,18 @@ int main(int argc, char* argv[]){
         	objectClusterSubscriber[count]= nh.subscribe(subTopic.str(), 1,
         			&BRICS_3D::ModelFitting::kinectCloudCallback, &poseEstimator[i][j]);
         	poseEstimator[i][j].setModelPublisher(&estimatedModelPublisher[i][j]);
+
+        	std::stringstream logFileName;
+        	logFileName << argv[argc-1]<< "processing_" << i+1 << "_" << j+1<< ".log";
+        	processingLogs[i][j].open(logFileName.str().c_str());
+
+        	logFileName.str("");
+        	logFileName << argv[argc-1] << "frame_delay_" << i+1 << "_" << j+1<< ".log";
+        	frameDelayLogs[i][j].open(logFileName.str().c_str());
+
+        	poseEstimator[i][j].setProcessingLogs(&processingLogs[i][j]);
+        	poseEstimator[i][j].setFrameDelayLogs(&frameDelayLogs[i][j]);
+
         	count++;
 		}
     }

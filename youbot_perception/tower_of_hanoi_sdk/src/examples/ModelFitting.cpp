@@ -51,6 +51,7 @@ ModelFitting::ModelFitting() {
 	bestScore = 1000;
 
 	poseEstimatorICP = new BRICS_3D::SDK::IterativeClosestPoint();
+	this->noOfFramesProcessed=0;
 }
 
 ModelFitting::~ModelFitting() {
@@ -75,6 +76,20 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 
 	//Transform sensor_msgs::PointCloud2 msg to pcl::PointCloud
 	pcl::fromROSMsg (cloud, *cloud_xyz_ptr);
+
+	//--------------------------------------------------------------------------------------------------
+	if(this->noOfFramesProcessed!=1 && this->noOfFramesProcessed<100 ){
+		this->currentFrame=clock();
+
+			*frameDelayLogs << this->noOfFramesProcessed << "\t"<<  cloud_xyz_ptr->size() << "\t"<<
+							((double)currentFrame - (double)previousFrame) / CLOCKS_PER_SEC<< "\n";
+
+			this->previousFrame=this->currentFrame;
+
+	} else {
+		this->previousFrame=clock();
+	}
+	//--------------------------------------------------------------------------------------------------
 
 	// cast PCL to BRICS_3D type
 	pclTypecaster.convertToBRICS3DDataType(cloud_xyz_ptr, in_cloud);
@@ -121,55 +136,80 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 	poseEstimatorICP->setMaxIterations(1000);
 	poseEstimatorICP->setObjectModel(transformedCubeModel2D);
 	poseEstimatorICP->estimateBestFit(in_cloud, finalModel2D);
-	float score2D = poseEstimatorICP->getFitnessScore();
-	Eigen::Matrix4f transformation2D=poseEstimatorICP->getFinalTransformation();
 
 	//Performing 3D model alignment
 	poseEstimatorICP->setObjectModel(transformedCubeModel3D);
 	poseEstimatorICP->estimateBestFit(in_cloud, finalModel3D);
+
+
+    //-------------------------------------------------------------------------------------------
+	//perform HSV color based extraction
+    startProcessing=clock();
+	//***************************************************************************
+    float score2D = poseEstimatorICP->getFitnessScore();
+	Eigen::Matrix4f transformation2D=poseEstimatorICP->getFinalTransformation();
+
 	float score3D = poseEstimatorICP->getFitnessScore();
 	Eigen::Matrix4f transformation3D=poseEstimatorICP->getFinalTransformation();
-
+	bool twoD=false;
 	if(score2D<score3D){
-		//publish model estimated using two sided cube
-		if(score2D < bestScore){
-			if(score2D > reliableScoreThreshold){
-				ROS_INFO("[%s] Approximate Model Found(2D)!! Object May Not be visible enough...",
-						modelPublisher->getTopic().c_str());
-			} else {
-				ROS_INFO("[%s] Reliable Model Found(2D) :) ", modelPublisher->getTopic().c_str());
+			//publish model estimated using two sided cube
+			if(score2D < bestScore){
+				if(score2D > reliableScoreThreshold){
+					ROS_INFO("[%s] Approximate Model Found(2D)!! Object May Not be visible enough...",
+							modelPublisher->getTopic().c_str());
+				} else {
+					ROS_INFO("[%s] Reliable Model Found(2D) :) ", modelPublisher->getTopic().c_str());
+				}
+				centroid3d = centroidEstimator.computeCentroid(finalModel2D);
+				xtranslation=centroid3d[0];
+				ytranslation=centroid3d[1];
+				ztranslation=centroid3d[2];
+				*bestTransformation = transformation2D;
+				bestScore = score2D;
 			}
-			centroid3d = centroidEstimator.computeCentroid(finalModel2D);
-			xtranslation=centroid3d[0];
-			ytranslation=centroid3d[1];
-			ztranslation=centroid3d[2];
-			*bestTransformation = transformation2D;
-			bestScore = score2D;
-		}
-		pclTypecaster.convertToPCLDataType(estimated_model_ptr,finalModel2D);
-		ROS_INFO("Best score found by 3D model : %f", score2D);
+			pclTypecaster.convertToPCLDataType(estimated_model_ptr,finalModel2D);
+			ROS_INFO("Best score found by 3D model : %f", score2D);
 
-
-	} else {
-		//publish model estimated using three sided cube
-		if(score3D<bestScore){
-			if(score3D > reliableScoreThreshold){
-				ROS_INFO("[%s] Approximate Model Found(3D)!! Object May Not be visible enough...",
-						modelPublisher->getTopic().c_str());
-			}else {
-				ROS_INFO("[%s] Reliable Model Found(3D) :) ", modelPublisher->getTopic().c_str());
+			twoD=true;
+		} else {
+			//publish model estimated using three sided cube
+			if(score3D<bestScore){
+				if(score3D > reliableScoreThreshold){
+					ROS_INFO("[%s] Approximate Model Found(3D)!! Object May Not be visible enough...",
+							modelPublisher->getTopic().c_str());
+				}else {
+					ROS_INFO("[%s] Reliable Model Found(3D) :) ", modelPublisher->getTopic().c_str());
+				}
+				centroid3d = centroidEstimator.computeCentroid(finalModel2D);
+				xtranslation=centroid3d[0];
+				ytranslation=centroid3d[1];
+				ztranslation=centroid3d[2];
+				*bestTransformation = transformation3D;
+				bestScore=score3D;
 			}
-			centroid3d = centroidEstimator.computeCentroid(finalModel2D);
-			xtranslation=centroid3d[0];
-			ytranslation=centroid3d[1];
-			ztranslation=centroid3d[2];
-			*bestTransformation = transformation3D;
-			bestScore=score3D;
+			pclTypecaster.convertToPCLDataType(estimated_model_ptr,finalModel3D);
+			ROS_INFO("Best score found by 3D model : %f", score3D);
+			twoD=false;
 		}
-		pclTypecaster.convertToPCLDataType(estimated_model_ptr,finalModel3D);
-		ROS_INFO("Best score found by 3D model : %f", score3D);
 
+	//***************************************************************************
+	endProcessing=clock();
+
+	if(noOfFramesProcessed<100){
+		if(twoD){
+			*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_ptr->size() << "\t"<<
+								((double)endProcessing - (double)startProcessing) / CLOCKS_PER_SEC
+								<< "\t"<< score2D<< "\t2D\n";
+
+		}else{
+			*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_ptr->size() << "\t"<<
+								((double)endProcessing - (double)startProcessing) / CLOCKS_PER_SEC
+								<< "\t"<< score3D << "\t3D\n";
+		}
 	}
+	//-------------------------------------------------------------------------------------------
+
 
 
     double yRot = asin (-(*(bestTransformation))(2));
@@ -212,5 +252,13 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 	delete transformedCubeModel3D;
 	delete bestTransformation;
 	delete homogeneousTrans;
+
+	this->noOfFramesProcessed++;
+
+	if(noOfFramesProcessed>100){
+		ROS_WARN("Logging Completed");
+//		exit(0);
+	}
+
 }
 }

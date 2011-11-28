@@ -119,6 +119,13 @@ int main(int argc, char* argv[]){
 	//define the HSV limit variables;
 	minH=0; maxH=0; minS=0; maxS=0;
 
+	std::ofstream processingLogs, frameDelayLogs;
+	processingLogs.open("demo_processing.log");
+	frameDelayLogs.open("demo_frame_delay.log");
+
+	roiExtractor.setProcessingLogs(&processingLogs);
+	roiExtractor.setFrameDelayLogs(&frameDelayLogs);
+
 	//initalize the roiExtractor
 	roiExtractor.initializeLimits(minH, maxH, minS, maxS);
 

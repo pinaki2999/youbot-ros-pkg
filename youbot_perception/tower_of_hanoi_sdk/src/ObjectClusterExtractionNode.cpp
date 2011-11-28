@@ -96,6 +96,8 @@ int main(int argc, char* argv[]){
 	}
 
 
+	std::ofstream processingLogs[noOfRegions], frameDelayLogs[noOfRegions];
+
 	for (int i = 0; i<noOfRegions; i++){
 		//initialize the publishers
 		for(int j=0; j<maxNoOfObjects; j++){
@@ -105,11 +107,25 @@ int main(int argc, char* argv[]){
 			pubTopic << "region_" << i+1 << "_obj_cluster_" << j+1;
 			extractedClusterPublisher[i][j] = nh.advertise< pcl::PointCloud<pcl::PointXYZ> >
 																				(pubTopic.str(), 1);
+
 		}
 
 		//initialize the object cluster extractor
 		objectClusterExtractor[i].initializeExtractor(maxNoOfObjects,extractedClusterPublisher[i],
-																				200,25000, 0.01);
+																				200,4000, 0.01);
+
+
+		std::stringstream logFileName;
+		logFileName << argv[argc-1]<< "processing_" << i+1 << ".log";
+		processingLogs[i].open(logFileName.str().c_str());
+
+		logFileName.str("");
+		logFileName << argv[argc-1] << "frame_delay_" << i+1 << ".log";
+		frameDelayLogs[i].open(logFileName.str().c_str());
+
+		objectClusterExtractor[i].setProcessingLogs(&processingLogs[i]);
+		objectClusterExtractor[i].setFrameDelayLogs(&frameDelayLogs[i]);
+
 	}
 
 	//subscribe to kinect point cloud messages

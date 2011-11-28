@@ -121,11 +121,11 @@ int main(int argc, char* argv[]){
 		roiExtractor[i].setExtractedRegionPublisher(&extractedRoiPublisher[i]);
 
 		stringstream logFileName;
-		logFileName << "processing_log_test_" << i+1 << ".txt";
+		logFileName << argv[argc-1]<< "processing_" << i+1 << ".log";
 		processingLogs[i].open(logFileName.str().c_str());
 
 		logFileName.str("");
-		logFileName << "frame_delay_log_test_" << i+1 << ".txt";
+		logFileName << argv[argc-1] << "frame_delay_" << i+1 << ".log";
 		frameDelayLogs[i].open(logFileName.str().c_str());
 
 		roiExtractor[i].setProcessingLogs(&processingLogs[i]);
