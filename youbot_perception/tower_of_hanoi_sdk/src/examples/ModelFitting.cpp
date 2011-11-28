@@ -79,15 +79,13 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 
 	//--------------------------------------------------------------------------------------------------
 	if(this->noOfFramesProcessed!=1 && this->noOfFramesProcessed<100 ){
-		this->currentFrame=clock();
-
 			*frameDelayLogs << this->noOfFramesProcessed << "\t"<<  cloud_xyz_ptr->size() << "\t"<<
-							((double)currentFrame - (double)previousFrame) / CLOCKS_PER_SEC<< "\n";
+							frameDelayTimer.elapsed()<< "\n";
 
-			this->previousFrame=this->currentFrame;
+			frameDelayTimer.restart();
 
 	} else {
-		this->previousFrame=clock();
+			frameDelayTimer.elapsed();
 	}
 	//--------------------------------------------------------------------------------------------------
 
@@ -144,7 +142,7 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 
     //-------------------------------------------------------------------------------------------
 	//perform HSV color based extraction
-    startProcessing=clock();
+    processingTimer.restart();
 	//***************************************************************************
     float score2D = poseEstimatorICP->getFitnessScore();
 	Eigen::Matrix4f transformation2D=poseEstimatorICP->getFinalTransformation();
@@ -194,18 +192,18 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 		}
 
 	//***************************************************************************
-	endProcessing=clock();
-
+	//endProcessing=clock();
+	double processingTime = processingTimer.elapsed();
 	if(noOfFramesProcessed<100){
 		if(twoD){
 			*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_ptr->size() << "\t"<<
-								((double)endProcessing - (double)startProcessing) / CLOCKS_PER_SEC
-								<< "\t"<< score2D<< "\t2D\n";
+								processingTime
+								<< "\t"<< score2D<< "\t0\n";
 
 		}else{
 			*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_ptr->size() << "\t"<<
-								((double)endProcessing - (double)startProcessing) / CLOCKS_PER_SEC
-								<< "\t"<< score3D << "\t3D\n";
+								processingTime
+								<< "\t"<< score3D << "\t1\n";
 		}
 	}
 	//-------------------------------------------------------------------------------------------

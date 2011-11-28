@@ -68,17 +68,12 @@ void ColorBasedRoiExtractor::kinectCloudCallback(const sensor_msgs::PointCloud2 
     pcl::fromROSMsg (cloud, *cloud_xyz_rgb_ptr);
 
 
-
 	if(this->noOfFramesProcessed!=1 && this->noOfFramesProcessed<100 ){
-		this->currentFrame=clock();
-
 			*frameDelayLogs << this->noOfFramesProcessed << "\t"<<  cloud_xyz_rgb_ptr->size()<< "\t" <<
-							((double)currentFrame - (double)previousFrame) / CLOCKS_PER_SEC<< "\n";
-
-			this->previousFrame=this->currentFrame;
-
+					frameDelayTimer.elapsed()<< "\n";
+			frameDelayTimer.restart();
 	} else {
-		this->previousFrame=clock();
+		frameDelayTimer.restart();
 	}
 
     // cast PCL to BRICS_3D type
@@ -97,8 +92,6 @@ void ColorBasedRoiExtractor::kinectCloudCallback(const sensor_msgs::PointCloud2 
 	if(noOfFramesProcessed<100)
 	*processingLogs  << this->noOfFramesProcessed << "\t" << cloud_xyz_rgb_ptr->size() << "\t"<<
 					processing_time << "\t" <<"\n";
-						//((double)endProcessing - (double)startProcessing) / CLOCKS_PER_SEC << "\n";
-
 	//-------------------------------------------------------------------------------------------
 
 	//convert back to PCl format for publishing

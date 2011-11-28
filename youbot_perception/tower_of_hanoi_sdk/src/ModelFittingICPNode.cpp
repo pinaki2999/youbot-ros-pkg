@@ -103,6 +103,12 @@ int main(int argc, char* argv[]){
         	logFileName << argv[argc-1] << "frame_delay_" << i+1 << "_" << j+1<< ".log";
         	frameDelayLogs[i][j].open(logFileName.str().c_str());
 
+    		frameDelayLogs[i][j].setf(std::ios::fixed,std::ios::floatfield);
+    		frameDelayLogs[i][j].precision(9);
+    		processingLogs[i][j].setf(std::ios::fixed,std::ios::floatfield);
+    		processingLogs[i][j].precision(9);
+
+
         	poseEstimator[i][j].setProcessingLogs(&processingLogs[i][j]);
         	poseEstimator[i][j].setFrameDelayLogs(&frameDelayLogs[i][j]);
 

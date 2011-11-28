@@ -36,6 +36,7 @@
 #include "util/PCLTypecaster.h"
 
 #include <fstream>
+#include <boost/timer.hpp>
 
 //Todo add the comments
 namespace BRICS_3D {
@@ -73,29 +74,14 @@ private:
 	 */
 	int noOfFramesProcessed;
 
-	/**
-	 * Keep timings for starting and end of the proccing(only the core algorithm)
-	 */
-	clock_t startProcessing;
-	clock_t endProcessing;
-
-	/**
-	 * Keep timings between two consecutive frames being processed
-	 */
-	clock_t previousFrame;
-	clock_t currentFrame;
-
-	/*
-	clock_t start = clock();
-    //Code you want timed here
-	printf("Time elapsed: %f\n", ((double)clock() - start) / CLOCKS_PER_SEC);
-	 */
-
 	/*
 	 * filestreams to save the logs
 	 */
 	std::ofstream *processingLogs;
 	std::ofstream *frameDelayLogs;
+
+	boost::timer processingTimer;
+	boost::timer frameDelayTimer;
 
 public:
 	EuclideanClusterExtractor();

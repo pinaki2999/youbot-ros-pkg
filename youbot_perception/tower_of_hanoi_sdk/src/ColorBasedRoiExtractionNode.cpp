@@ -128,6 +128,10 @@ int main(int argc, char* argv[]){
 		logFileName << argv[argc-1] << "frame_delay_" << i+1 << ".log";
 		frameDelayLogs[i].open(logFileName.str().c_str());
 
+		frameDelayLogs[i].setf(ios::fixed,ios::floatfield);
+		frameDelayLogs[i].precision(9);
+		processingLogs[i].setf(ios::fixed,ios::floatfield);
+		processingLogs[i].precision(9);
 		roiExtractor[i].setProcessingLogs(&processingLogs[i]);
 		roiExtractor[i].setFrameDelayLogs(&frameDelayLogs[i]);
 

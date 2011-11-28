@@ -64,15 +64,13 @@ void EuclideanClusterExtractor::kinectCloudCallback(const sensor_msgs::PointClou
 
 
     	if(this->noOfFramesProcessed!=1 && this->noOfFramesProcessed<100 ){
-    		this->currentFrame=clock();
-
     			*frameDelayLogs << this->noOfFramesProcessed << "\t"<<  cloud_xyz_rgb_ptr->size() << "\t" <<
-    							((double)currentFrame - (double)previousFrame) / CLOCKS_PER_SEC<< "\n";
+    							frameDelayTimer.elapsed()<< "\n";
 
-    			this->previousFrame=this->currentFrame;
+    			frameDelayTimer.restart();
 
     	} else {
-    		this->previousFrame=clock();
+    		frameDelayTimer.restart();
     	}
 
         BRICS_3D::PointCloud3D *in_cloud = new BRICS_3D::PointCloud3D();
@@ -82,13 +80,13 @@ void EuclideanClusterExtractor::kinectCloudCallback(const sensor_msgs::PointClou
 
     //-------------------------------------------------------------------------------------------
     //extract the clusters
-    startProcessing=clock();
+    processingTimer.restart();
     euclideanClusterExtractor.extractClusters(in_cloud, &extracted_clusters);
-	endProcessing=clock();
+
     ROS_INFO("No of clusters found: %d", extracted_clusters.size());
 	if(noOfFramesProcessed<100)
 	*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_rgb_ptr->size() << "\t"<<
-						((double)endProcessing - (double)startProcessing) / CLOCKS_PER_SEC <<
+						processingTimer.elapsed() <<
 						"\t" << extracted_clusters.size() << "\n";
 	//-------------------------------------------------------------------------------------------
 
