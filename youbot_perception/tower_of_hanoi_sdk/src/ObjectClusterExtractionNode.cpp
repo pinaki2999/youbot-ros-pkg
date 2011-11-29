@@ -112,7 +112,7 @@ int main(int argc, char* argv[]){
 
 		//initialize the object cluster extractor
 		objectClusterExtractor[i].initializeExtractor(maxNoOfObjects,extractedClusterPublisher[i],
-																				200,4000, 0.01);
+																				100,4000, 0.01);
 
 
 		std::stringstream logFileName;

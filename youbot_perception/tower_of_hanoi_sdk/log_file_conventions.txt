@@ -2,28 +2,35 @@
 --------------------------
 
 => Located in 
+-------------
 
 	logs/time_evaluation
 
 => Naming conventions
+---------------------
 
 	<resolution_input>_<no_of_objects>_<faces_visible>_<algorithm_evaluated>_<object/region number>.log
 
 
 => Data stored
+--------------
 	
 	=> Frame Delays : for all algorithms
-		
+	------------------------------------
+	
 		<frame_no>	<input_data_size>	<time_delay_since_last_frame>	
 
 	=> RoiExtraction
+	----------------
 
 		<frame_no>	<input_data_size>	<time_for_extraction>
 
 	=> Object Cluster extraction	
+	----------------------------
 
 		<frame_no>	<input_data_size>	<time_for_cluster_extraction>	<no_of_clusters_found>
 
 	=> Model Fitting
+	----------------
 	
-		<frame_no>	<input_cluster_size>	<time_for_model_fitting> 	<fitted_model : 2D/3D (0/1)>
+		<frame_no>	<input_cluster_size>	<time_for_model_fitting> 	<current_best_score>		<overall_best_score>	<fitted_model : 2D/3D (0/1)>

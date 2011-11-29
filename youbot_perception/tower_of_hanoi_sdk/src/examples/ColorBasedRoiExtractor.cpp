@@ -69,7 +69,7 @@ void ColorBasedRoiExtractor::kinectCloudCallback(const sensor_msgs::PointCloud2 
 
 
 	if(this->noOfFramesProcessed!=1 && this->noOfFramesProcessed<100 ){
-			*frameDelayLogs << this->noOfFramesProcessed << "\t"<<  cloud_xyz_rgb_ptr->size()<< "\t" <<
+			*frameDelayLogs << this->noOfFramesProcessed << " "<<  cloud_xyz_rgb_ptr->size()<< " " <<
 					frameDelayTimer.elapsed()<< "\n";
 			frameDelayTimer.restart();
 	} else {
@@ -90,8 +90,8 @@ void ColorBasedRoiExtractor::kinectCloudCallback(const sensor_msgs::PointCloud2 
 	ROS_INFO("Size of extracted cloud : %d ", extracted_cloud->getSize());
 
 	if(noOfFramesProcessed<100)
-	*processingLogs  << this->noOfFramesProcessed << "\t" << cloud_xyz_rgb_ptr->size() << "\t"<<
-					processing_time << "\t" <<"\n";
+	*processingLogs  << this->noOfFramesProcessed << " " << cloud_xyz_rgb_ptr->size() << " "<<
+					processing_time << " " <<"\n";
 	//-------------------------------------------------------------------------------------------
 
 	//convert back to PCl format for publishing

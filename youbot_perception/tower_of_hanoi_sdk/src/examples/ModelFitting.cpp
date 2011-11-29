@@ -85,7 +85,7 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 			frameDelayTimer.restart();
 
 	} else {
-			frameDelayTimer.elapsed();
+			frameDelayTimer.restart();
 	}
 	//--------------------------------------------------------------------------------------------------
 
@@ -198,12 +198,12 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 		if(twoD){
 			*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_ptr->size() << "\t"<<
 								processingTime
-								<< "\t"<< score2D<< "\t0\n";
+								<< "\t"<< score2D << "\t" << bestScore << "\t0\n";
 
 		}else{
 			*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_ptr->size() << "\t"<<
 								processingTime
-								<< "\t"<< score3D << "\t1\n";
+								<< "\t"<< score3D << "\t" << bestScore << "\t1\n";
 		}
 	}
 	//-------------------------------------------------------------------------------------------
