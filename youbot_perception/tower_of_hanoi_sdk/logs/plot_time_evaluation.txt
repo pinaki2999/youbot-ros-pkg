@@ -1,0 +1,39 @@
+set terminal postscript color
+set output 'time_evaluation.ps'
+set key outside top left box
+set   autoscale                        # scale axes automatically
+set xtic auto                          # set xtics automatically
+set ytic auto                          # set ytics automatically
+
+#Frame Delay for Roi Extraction
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Complete Frame Processing Time for Color-Based ROI Extraction"
+set xlabel "Input-Data Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_3_RoiExtraction_frame_delay_1.log" using 2:3 title '640x480', \
+		"time_evaluation/320x240_1_3_RoiExtraction_frame_delay_1.log" using 2:3 title '320x240', \
+		"time_evaluation/160x120_1_3_RoiExtraction_frame_delay_1.log" using 2:3 title '160x120'
+		
+#Frame Delay for Object Clustering
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Complete Frame Processing Time for Object Cluster Extraction"
+set xlabel "Input ROI Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_3_ObjectClusterExtractor_frame_delay_1.log" using 2:3 title '640x480', \
+		"time_evaluation/320x240_1_3_ObjectClusterExtractor_frame_delay_1.log" using 2:3 title '320x240', \
+		"time_evaluation/160x120_1_3_ObjectClusterExtractor_frame_delay_1.log" using 2:3 title '160x120'
+
+#Frame Delay for Model Fitting
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Complete Frame Processing Time for Object Model Fitting"
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_3_ModelFitting_frame_delay_1_1.log" using 2:3 title '640x480', \
+		"time_evaluation/320x240_1_3_ModelFitting_frame_delay_1_1.log" using 2:3 title '320x240', \
+		"time_evaluation/160x120_1_3_ModelFitting_frame_delay_1_1.log" using 2:3 title '160x120'
+
+
+
