@@ -1,10 +1,16 @@
 set terminal postscript color
-set output 'time_evaluation.ps'
-set key outside top left box
+set output 'demo.ps'
+set key inside top left box
 set   autoscale                        # scale axes automatically
 set xtic auto                          # set xtics automatically
 set ytic auto                          # set ytics automatically
-
+set xtic rotate by -45 scale 0
+#---------------------------------------------------------------------------------------------------
+#--------------------------ROI EXTRACTION EVALUATION------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
 #Frame Delay for Roi Extraction
 unset log                              # remove any log-scaling
 unset label                            # remove any previous labels
@@ -14,7 +20,52 @@ set ylabel "Time Delay for each frame(seconds) --->"
 plot    "time_evaluation/640x480_1_3_RoiExtraction_frame_delay_1.log" using 2:3 title '640x480', \
 		"time_evaluation/320x240_1_3_RoiExtraction_frame_delay_1.log" using 2:3 title '320x240', \
 		"time_evaluation/160x120_1_3_RoiExtraction_frame_delay_1.log" using 2:3 title '160x120'
-		
+set origin 0.5,0.0
+#Frame Delay for Roi Extraction
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Complete Frame Processing Time for Color-Based ROI Extraction"
+set title " "
+set xlabel "Input-Data Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_2_RoiExtraction_frame_delay_1.log" using 2:3 title '640x480', \
+		"time_evaluation/320x240_1_2_RoiExtraction_frame_delay_1.log" using 2:3 title '320x240', \
+		"time_evaluation/160x120_1_2_RoiExtraction_frame_delay_1.log" using 2:3 title '160x120'
+unset multiplot
+#*********************************************************************************************************************
+
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
+#Processing Delay for Roi Extraction
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Processing Time for Color Based ROI Extraction"
+set xlabel "Input Data Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_3_RoiExtraction_processing_1.log" using 2:3 title '640x480', \
+	"time_evaluation/320x240_1_3_RoiExtraction_processing_1.log" using 2:3 title '320x240', \
+	"time_evaluation/160x120_1_3_RoiExtraction_processing_1.log" using 2:3 title '160x120'
+set origin 0.5,0.0
+#Processing Delay for Roi Extraction
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Processing Time for Color Based ROI Extraction"
+set title " "
+set xlabel "Input Data Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_2_RoiExtraction_processing_1.log" using 2:3 title '640x480', \
+	"time_evaluation/320x240_1_2_RoiExtraction_processing_1.log" using 2:3 title '320x240', \
+	"time_evaluation/160x120_1_2_RoiExtraction_processing_1.log" using 2:3 title '160x120'
+unset multiplot
+#*********************************************************************************************************************
+
+#---------------------------------------------------------------------------------------------------
+#--------------------------OBJECT CLUSTER EVALUATION------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
 #Frame Delay for Object Clustering
 unset log                              # remove any log-scaling
 unset label                            # remove any previous labels
@@ -24,7 +75,50 @@ set ylabel "Time Delay for each frame(seconds) --->"
 plot    "time_evaluation/640x480_1_3_ObjectClusterExtractor_frame_delay_1.log" using 2:3 title '640x480', \
 		"time_evaluation/320x240_1_3_ObjectClusterExtractor_frame_delay_1.log" using 2:3 title '320x240', \
 		"time_evaluation/160x120_1_3_ObjectClusterExtractor_frame_delay_1.log" using 2:3 title '160x120'
+set origin 0.5,0.0
+#Frame Delay for Object Clustering
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Complete Frame Processing Time for Object Cluster Extraction"
+set xlabel "Input ROI Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_2_ObjectClusterExtractor_frame_delay_1.log" using 2:3 title '640x480', \
+		"time_evaluation/320x240_1_2_ObjectClusterExtractor_frame_delay_1.log" using 2:3 title '320x240', \
+		"time_evaluation/160x120_1_2_ObjectClusterExtractor_frame_delay_1.log" using 2:3 title '160x120'
 
+unset multiplot
+#*********************************************************************************************************************
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
+#Processing Delay for Object Clustering
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Processing Time for Object Cluster Extraction"
+
+set xlabel "Input ROI Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_3_ObjectClusterExtractor_processing_1.log" using 2:3 title '640x480', \
+	"time_evaluation/320x240_1_3_ObjectClusterExtractor_processing_1.log" using 2:3 title '320x240', \
+	"time_evaluation/160x120_1_3_ObjectClusterExtractor_processing_1.log" using 2:3 title '160x120'
+set origin 0.5,0.0
+#Processing Delay for Object Clustering
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Processing Time for Object Cluster Extraction"
+set title " "
+set xlabel "Input ROI Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_2_ObjectClusterExtractor_processing_1.log" using 2:3 title '640x480', \
+	"time_evaluation/320x240_1_2_ObjectClusterExtractor_processing_1.log" using 2:3 title '320x240', \
+	"time_evaluation/160x120_1_2_ObjectClusterExtractor_processing_1.log" using 2:3 title '160x120'
+unset multiplot
+#---------------------------------------------------------------------------------------------------
+#--------------------------OBJECT MODEL FITTING-----------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
 #Frame Delay for Model Fitting
 unset log                              # remove any log-scaling
 unset label                            # remove any previous labels
@@ -34,6 +128,158 @@ set ylabel "Time Delay for each frame(seconds) --->"
 plot    "time_evaluation/640x480_1_3_ModelFitting_frame_delay_1_1.log" using 2:3 title '640x480', \
 		"time_evaluation/320x240_1_3_ModelFitting_frame_delay_1_1.log" using 2:3 title '320x240', \
 		"time_evaluation/160x120_1_3_ModelFitting_frame_delay_1_1.log" using 2:3 title '160x120'
+set origin 0.5,0.0
 
+#Frame Delay for Model Fitting
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Complete Frame Processing Time for Object Model Fitting"
+set title " "
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_2_ModelFitting_frame_delay_1_1.log" using 2:3 title '640x480', \
+		"time_evaluation/320x240_1_2_ModelFitting_frame_delay_1_1.log" using 2:3 title '320x240', \
+		"time_evaluation/160x120_1_2_ModelFitting_frame_delay_1_1.log" using 2:3 title '160x120'
 
+unset multiplot
+#*********************************************************************************************************************
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
+#Processing Delay for Model Fitting
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Processing Time for Object Model Fitting"
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_3_ModelFitting_processing_1_1.log" using 2:3 title '640x480', \
+		"time_evaluation/320x240_1_3_ModelFitting_processing_1_1.log" using 2:3 title '320x240', \
+		"time_evaluation/160x120_1_3_ModelFitting_processing_1_1.log" using 2:3 title '160x120'
+set origin 0.5,0.0
+#Processing Delay for Model Fitting
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Processing Time for Object Model Fitting"
+set title " "
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_2_ModelFitting_processing_1_1.log" using 2:3 title '640x480', \
+		"time_evaluation/320x240_1_2_ModelFitting_processing_1_1.log" using 2:3 title '320x240', \
+		"time_evaluation/160x120_1_2_ModelFitting_processing_1_1.log" using 2:3 title '160x120'
+unset multiplot
+#*********************************************************************************************************************
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
+#Frame Delay for Model Fitting(detailed view of only 640x480)
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Complete Frame Processing Time for Object Model Fitting"
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_3_ModelFitting_frame_delay_1_1.log" using 2:3 title '640x480'
+set origin 0.5,0.0
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Complete Frame Processing Time for Object Model Fitting"
+set title " "
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_2_ModelFitting_frame_delay_1_1.log" using 2:3 title '640x480'
+unset multiplot
+#*********************************************************************************************************************
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
+#Processing Delay for Model Fitting(detailed view of only 640x480)
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Processing Time for Object Model Fitting"
+set title " "
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_3_ModelFitting_processing_1_1.log" using 2:3 title '640x480'
+set origin 0.5,0.0
+#Processing Delay for Model Fitting(detailed view of only 640x480)
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Processing Time for Object Model Fitting"
+set title " "
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Time Delay for each frame(seconds) --->"
+plot    "time_evaluation/640x480_1_2_ModelFitting_processing_1_1.log" using 2:3 title '640x480'
+unset multiplot
+#*********************************************************************************************************************
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
+#Best scores vs Cluster Size for Model Fitting
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Fitting accuracy based on input size"
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Best Score Found--->"
+plot    "time_evaluation/640x480_1_3_ModelFitting_processing_1_1.log" using 2:4 title '640x480', \
+	"time_evaluation/320x240_1_3_ModelFitting_processing_1_1.log" using 2:4 title '320x240', \
+	"time_evaluation/160x120_1_3_ModelFitting_processing_1_1.log" using 2:4 title '160x120'
+set origin 0.5,0.0
+#Best scores vs Cluster Size for Model Fitting
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Fitting accuracy based on input size"
+set title " "
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Best Score Found--->"
+plot    "time_evaluation/640x480_1_2_ModelFitting_processing_1_1.log" using 2:4 title '640x480', \
+	"time_evaluation/320x240_1_2_ModelFitting_processing_1_1.log" using 2:4 title '320x240', \
+	"time_evaluation/160x120_1_2_ModelFitting_processing_1_1.log" using 2:4 title '160x120'
 
+unset multiplot
+#*********************************************************************************************************************
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
+
+#Best scores vs Cluster Size for Model Fitting (detailed view of only 640x480)
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Fitting accuracy based on input size"
+set title " "
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Best Score Found--->"
+plot    "time_evaluation/640x480_1_3_ModelFitting_processing_1_1.log" using 2:4 title '640x480'
+set origin 0.5,0.0
+#Best scores vs Cluster Size for Model Fitting (detailed view of only 640x480)
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Fitting accuracy based on input size"
+set xlabel "Object Cluster Size(number of points) ---> "
+set ylabel "Best Score Found--->"
+plot    "time_evaluation/640x480_1_2_ModelFitting_processing_1_1.log" using 2:4 title '640x480'
+unset multiplot
+#*********************************************************************************************************************
+set multiplot
+set size 0.5,1.0
+set origin 0.0,0.0
+#Best score aquisition characteristics
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+set title "Best Model Estimation Characteristic"
+set xlabel "Frame Number ---> "
+set ylabel "Overall Best score found over all frames--->"
+plot    "time_evaluation/640x480_1_3_ModelFitting_processing_1_1.log" using 1:5 title '640x480', \
+	"time_evaluation/320x240_1_3_ModelFitting_processing_1_1.log" using 1:5 title '320x240', \
+	"time_evaluation/160x120_1_3_ModelFitting_processing_1_1.log" using 1:5 title '160x120'
+set origin 0.5,0.0
+#Best score aquisition characteristics
+unset log                              # remove any log-scaling
+unset label                            # remove any previous labels
+#set title "Best Model Estimation Characteristic"
+set title " "
+set xlabel "Frame Number ---> "
+set ylabel "Overall Best score found over all frames--->"
+plot    "time_evaluation/640x480_1_2_ModelFitting_processing_1_1.log" using 1:5 title '640x480', \
+	"time_evaluation/320x240_1_2_ModelFitting_processing_1_1.log" using 1:5 title '320x240', \
+	"time_evaluation/160x120_1_2_ModelFitting_processing_1_1.log" using 1:5 title '160x120'
+unset multiplot
+#*********************************************************************************************************************
