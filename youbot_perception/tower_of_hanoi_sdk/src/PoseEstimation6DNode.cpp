@@ -237,8 +237,8 @@ int main(int argc, char* argv[]){
 		poseEstimators[i]->initializeLimits(minLimitH[i], maxLimitH[i], minLimitS[i], maxLimitS[i]);
 		//Initializing the cluster extractor limits
 		poseEstimators[i]->initializeClusterExtractor(200,10000,0.01);
-		poseEstimators[i]->setPositionAccuracyLogs(positionAccuracyLogs[i]);
-		poseEstimators[i]->setRotationAccuracyLogs(rotationAccuracyLogs[i]);
+		poseEstimators[i]->setPositionAccuracyLogs(&positionAccuracyLogs[i]);
+		poseEstimators[i]->setRotationAccuracyLogs(&rotationAccuracyLogs[i]);
 	}
 
 
