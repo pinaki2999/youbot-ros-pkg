@@ -40,6 +40,9 @@
 #include <iostream>
 #include <vector>
 #include <Eigen/StdVector>
+#include <tf/transform_listener.h>
+#include <cmath>
+#include <fstream>
 namespace BRICS_3D {
 
 class PoseEstimation6D {
@@ -122,6 +125,16 @@ class PoseEstimation6D {
 	 * Best transformation found by the model fitting process
 	 */
 	std::vector<Eigen::Matrix4f*> bestTransformation;
+
+
+	int noOfFramesProcessed;
+
+	/*
+	 * filestreams to save the logs
+	 */
+	std::ofstream *positionAccuracyLogs;
+	std::ofstream *rotationAccuracyLogs;
+
 
 	/**
 	 * Helper function to calculate a homogeneous matrix for affine-transformation
@@ -209,6 +222,26 @@ public:
 
 	std::string getRegionLabel() const;
     void setRegionLabel(std::string regionLabel);
+    std::ofstream *getPositionAccuracyLogs() const
+    {
+        return positionAccuracyLogs;
+    }
+
+    std::ofstream *getRotationAccuracyLogs() const
+    {
+        return rotationAccuracyLogs;
+    }
+
+    void setPositionAccuracyLogs(std::ofstream *positionAccuracyLogs)
+    {
+        this->positionAccuracyLogs = positionAccuracyLogs;
+    }
+
+    void setRotationAccuracyLogs(std::ofstream *rotationAccuracyLogs)
+    {
+        this->rotationAccuracyLogs = rotationAccuracyLogs;
+    }
+
 };
 
 }

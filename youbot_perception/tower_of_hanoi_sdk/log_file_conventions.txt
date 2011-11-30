@@ -1,5 +1,6 @@
 *Time-evaluation log files
 --------------------------
+==========================
 
 => Located in 
 -------------
@@ -9,7 +10,8 @@
 => Naming conventions
 ---------------------
 
-	<resolution_input>_<no_of_objects>_<faces_visible>_<algorithm_evaluated>_<object/region number>.log
+	<resolution_input>_<no_of_objects>_<faces_visible>_<algorithm_evaluated>_frame_delay_<object/region number>.log
+	<resolution_input>_<no_of_objects>_<faces_visible>_<algorithm_evaluated>_processing_<object/region number>.log
 
 
 => Data stored
@@ -34,3 +36,35 @@
 	----------------
 	
 		<frame_no>	<input_cluster_size>	<time_for_model_fitting> 	<current_best_score>		<overall_best_score>	<fitted_model : 2D/3D (0/1)>
+
+		
+*Accuracy Test log files
+------------------------
+========================
+
+=> Located in
+-------------
+
+	logs/accuracy_tests
+
+=> Naming conventions
+---------------------
+
+	<resolution_input>_<no_of_objects>_<faces_visible>_accuracy_position_<object/region number>.log
+	<resolution_input>_<no_of_objects>_<faces_visible>_accuracy_rotation_<object/region number>.log
+
+=> Data stored
+--------------
+
+	=> Accuracy Position Logs
+	-------------------------
+		
+		<x_GT_Frame>	<y_GT_Frame>	<z_GT_Frame>	<x_estimated>	<y_estimated>	<z_estimated>
+		<x_diff>	<y_diff>	<z_diff>	<euclidean_distance_estimation_GT>	<score_estimation>	<2D/3D>
+		
+		
+	=> Accuracy Rotation Logs
+	-------------------------
+		
+		<x_rot_GT_Frame>	<y_rot_GT_Frame>	<z_rot_GT_Frame>	<x_rot_estimated>	<y_rot_estimated>	
+		<z_rot_estimated> 	<x_rot_diff>	<y_rot_diff>	<z_rot_diff>	<score_estimation>	<2D/3D (0/1)>			

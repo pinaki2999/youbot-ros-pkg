@@ -202,6 +202,7 @@ int main(int argc, char* argv[]){
 
 	//parse the configuration files and set up the HSV limits and set up the pose estimators
 	std::ifstream configFileStream;
+	std::ofstream positionAccuracyLogs[noOfRegions], rotationAccuracyLogs[noOfRegions];
 	for (unsigned int i = 0; i< noOfRegions; i++){
 
 		poseEstimators.push_back(new BRICS_3D::PoseEstimation6D());
@@ -236,6 +237,8 @@ int main(int argc, char* argv[]){
 		poseEstimators[i]->initializeLimits(minLimitH[i], maxLimitH[i], minLimitS[i], maxLimitS[i]);
 		//Initializing the cluster extractor limits
 		poseEstimators[i]->initializeClusterExtractor(200,10000,0.01);
+		poseEstimators[i]->setPositionAccuracyLogs(positionAccuracyLogs[i]);
+		poseEstimators[i]->setRotationAccuracyLogs(rotationAccuracyLogs[i]);
 	}
 
 

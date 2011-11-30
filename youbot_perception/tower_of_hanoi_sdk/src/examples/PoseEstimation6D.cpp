@@ -19,6 +19,7 @@
 
 #include "PoseEstimation6D.h"
 
+
 namespace BRICS_3D {
 
 PoseEstimation6D::PoseEstimation6D() {
@@ -88,6 +89,7 @@ PoseEstimation6D::PoseEstimation6D() {
 //	translation[2] = 0;
 
 	centroid3DEstimator =  new BRICS_3D::Centroid3D();
+	this->noOfFramesProcessed=0;
 
 }
 
@@ -118,7 +120,7 @@ void PoseEstimation6D::setMaxNoOfObjects(int maxNoOfObjects)
 		ztranslation.push_back(0);
 		bestTransformation.push_back(new Eigen::Matrix4f());
 	}
-
+	this->noOfFramesProcessed=0;
 }
 
 PoseEstimation6D::~PoseEstimation6D() {
@@ -204,6 +206,8 @@ void PoseEstimation6D::estimatePose(BRICS_3D::PointCloud3D *in_cloud, int objCou
 	float score3D = poseEstimatorICP->getFitnessScore();
 	Eigen::Matrix4f transformation3D = poseEstimatorICP->getFinalTransformation();
 
+	bool twoD = false;
+
 	if(score2D<score3D){
 		//publish model estimated using two sided cube
 		if(score2D < bestScore[objCount]){
@@ -221,6 +225,7 @@ void PoseEstimation6D::estimatePose(BRICS_3D::PointCloud3D *in_cloud, int objCou
 		}
 		ROS_INFO("[%s_%d] Best score found by 2D model : %f", regionLabel.c_str(), objCount,score2D);
 		bestScore[objCount] = score2D;
+		twoD = true;
 
 	} else {
 		//publish model estimated using three sided cube
@@ -260,6 +265,45 @@ void PoseEstimation6D::estimatePose(BRICS_3D::PointCloud3D *in_cloud, int objCou
      br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "/openni_rgb_optical_frame",
     		 ss.str()));
 
+
+     //********************************************************************************************************Accuray Tests
+	 tf::TransformListener listener;
+	 tf::StampedTransform transform_gt_frame;
+
+ 	//wait and listen to current xyz GT Frame
+	    try{
+	      listener.lookupTransform("/openni_rgb_optical_frame","/gt_frame",
+	                               ros::Time(0), transform_gt_frame);
+	    }
+	    catch (tf::TransformException ex){
+	      ROS_ERROR("%s",ex.what());
+	    }
+
+	    double x_gt_frame = transform_gt_frame.getOrigin().getX();
+	    double y_gt_frame = transform_gt_frame.getOrigin().getY();
+	    double z_gt_frame = transform_gt_frame.getOrigin().getZ();
+
+	    double x_error = xtranslation[objCount] - x_gt_frame;
+	    double y_error = ytranslation[objCount] - y_gt_frame;
+	    double z_error = ztranslation[objCount] - z_gt_frame;
+
+	    double	euclideanDistance = std::sqrt( (x_error*x_error) + (y_error*y_error) + (z_error*z_error) );
+
+    /**
+     *  write to processing logs:
+     *  <3D_Position_GT_FRAME> <3D_estimated_Position> <Diff_3D_Positions> <Euclidean_distances> <CUrrent_Best_Score> <2D/3D>
+     */
+	    if(twoD){
+	    *positionAccuracyLogs 	<<	x_gt_frame << "\t" << y_gt_frame << "\t" << z_gt_frame << "\t"
+	    						<< xtranslation[objCount] << "\t" << ytranslation[objCount] << "\t" << ztranslation[objCount]
+	    						<< "\t" << x_error << "\t" << y_error << "\t" << z_error << "\t" << euclideanDistance << "\t" << score2D << "\t0\n";
+	    } else {
+	    *positionAccuracyLogs 	<<	x_gt_frame << "\t" << y_gt_frame << "\t" << z_gt_frame << "\t"
+	      						<< xtranslation[objCount] << "\t" << ytranslation[objCount] << "\t" << ztranslation[objCount]
+	       						<< "\t" << x_error << "\t" << y_error << "\t" << z_error << "\t" << euclideanDistance << "\t" << score3D << "\t1\n";
+	    }
+     //********************************************************************************************************Accuray Tests
+
 	delete finalModel2D;
 	delete finalModel3D;
 	delete transformedCubeModel2D;
@@ -294,8 +338,6 @@ void PoseEstimation6D::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud
 	//extract the clusters
 	euclideanClusterExtractor.extractClusters(color_based_roi, &extracted_clusters);
 	ROS_INFO("[%s] No of clusters found: %d", regionLabel.c_str(), extracted_clusters.size());
-
-
 	/**==================================================================================================== [6D pose estimation]**/
 	//Estimate 6D Pose
 	int regions;
