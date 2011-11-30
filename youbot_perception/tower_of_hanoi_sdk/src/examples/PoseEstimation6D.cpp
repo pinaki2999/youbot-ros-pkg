@@ -272,8 +272,10 @@ void PoseEstimation6D::estimatePose(BRICS_3D::PointCloud3D *in_cloud, int objCou
 
  	//wait and listen to current xyz GT Frame
 	    try{
+	    	listener.waitForTransform("/openni_rgb_optical_frame","/gt_frame",
+	    				ros::Time::now(), ros::Duration(10.0));
 	      listener.lookupTransform("/openni_rgb_optical_frame","/gt_frame",
-	                               ros::Time(0), transform_gt_frame);
+	    		  ros::Time(0), transform_gt_frame);
 	    }
 	    catch (tf::TransformException ex){
 	      ROS_ERROR("%s",ex.what());

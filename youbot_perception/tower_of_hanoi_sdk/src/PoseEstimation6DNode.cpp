@@ -176,7 +176,7 @@ int main(int argc, char* argv[]){
 	noOfRegions = 0;
 	maxNoOfObjects = 0;
 
-	if(argc < 4){
+	if(argc < 4 ){
 
 
 		ROS_ERROR("Not enough arguments:\n Usage:\t "
@@ -184,7 +184,7 @@ int main(int argc, char* argv[]){
 				"<region_2_config_file>.... <region_label_1> <region_label_2>\n"
 				"\nExample: rosrun poseEstimator6D 2 3 redRoiConfig.cfg greenRoiConfig.cfg red green");
 		exit(0);
-	} else if(argc != (3+ 2*atoi(argv[1]))){
+	} else if(argc < (3+ 2*atoi(argv[1]))){
 		ROS_ERROR("Not enough arguments:\n Usage:\t "
 				"rosrun colorBasedRoiExtractor <no_of_regions> <maxNoOfObjects> <region_1_config_file> "
 				"<region_2_config_file>.... <region_label_1> <region_label_2>");
@@ -237,6 +237,16 @@ int main(int argc, char* argv[]){
 		poseEstimators[i]->initializeLimits(minLimitH[i], maxLimitH[i], minLimitS[i], maxLimitS[i]);
 		//Initializing the cluster extractor limits
 		poseEstimators[i]->initializeClusterExtractor(200,10000,0.01);
+
+		std::stringstream logName;
+		logName.str("");
+		logName << argv[argc-1] << "_accuracy_position_" << i+1 << ".log";
+		positionAccuracyLogs[i].open(logName.str().c_str());
+
+		logName.str("");
+		logName << argv[argc-1] << "_accuracy_rotation_" << i+1 << ".log";
+		rotationAccuracyLogs[i].open(logName.str().c_str());
+
 		poseEstimators[i]->setPositionAccuracyLogs(&positionAccuracyLogs[i]);
 		poseEstimators[i]->setRotationAccuracyLogs(&rotationAccuracyLogs[i]);
 	}

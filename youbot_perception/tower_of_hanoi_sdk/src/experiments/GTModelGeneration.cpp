@@ -14,7 +14,7 @@ GTModelGeneration::GTModelGeneration() {
 	cubeModel = new BRICS_3D::PointCloud3D();
 	cubeModelGenerator.setPointsOnEachSide(10);
 	cubeModelGenerator.setCubeSideLength(cubeLength);
-	cubeModelGenerator.setNumOfFaces(3);
+	cubeModelGenerator.setNumOfFaces(6);
 	cubeModelGenerator.generatePointCloud(cubeModel);
 }
 
@@ -137,7 +137,7 @@ int main(int argc, char* argv[]){
 
 		//Get the transform for pattern base
 		try{
-			listener.lookupTransform("/openni_rgb_optical_frame","/PATTERN_BASE",
+			listener.lookupTransform("/openni_rgb_optical_frame","/gt_frame",
 
 					ros::Time(0), transformPatternBase);
 		}

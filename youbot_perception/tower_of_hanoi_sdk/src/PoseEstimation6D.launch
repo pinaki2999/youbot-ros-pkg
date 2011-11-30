@@ -6,7 +6,10 @@
 <!-- HSV-Limits Configuration Files with full path -->
 <!-- Region Labes used by the nodes to publish the transforms -->
 
+	<node name="static_transform_publisher" pkg="tf" type="static_transform_publisher" args="0.005 0 0.025 0 0 0 /PATTERN_BASE /gt_frame 100" />
+
 	<node name="poseEstimator6D" pkg="tower_of_hanoi_sdk" type="poseEstimator6D" 
-					args="1 2 $(find tower_of_hanoi_sdk)/redRoiConfig.cfg red" />
+					args="1 1 $(find tower_of_hanoi_sdk)/yellowRoiConfig.cfg red" />
+	
 
 </launch>
