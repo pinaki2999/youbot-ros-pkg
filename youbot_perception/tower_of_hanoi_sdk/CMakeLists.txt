@@ -86,3 +86,10 @@ rosbuild_add_executable(perceptionEngineConfigurator src/ConfigurePerception.cpp
 rosbuild_add_executable(gopalModelGenerator src/experiments/GTModelGeneration.cpp)
 target_link_libraries(gopalModelGenerator   
 										brics3d_util brics3d_algorithm brics3d_core)
+
+rosbuild_add_executable(gopalLogFileParser src/experiments/LogFileParsers.cpp)
+
+#executable for hsv configuration finder
+rosbuild_add_executable(gopalRGBLimitsFinder src/RGBLimitsFinderNode.cpp 
+						src/examples/ColorBasedRoiExtractor_RGB)
+target_link_libraries(gopalRGBLimitsFinder  brics3d_util brics3d_algorithm brics3d_core)

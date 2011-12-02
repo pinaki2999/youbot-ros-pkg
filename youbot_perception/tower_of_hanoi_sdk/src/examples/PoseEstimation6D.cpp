@@ -1,21 +1,21 @@
 /******************************************************************************
-* BRICS_3D - 3D Perception and Modeling Library
-* Copyright (c) 2011, GPS GmbH
-*
-* Author: Pinaki Sunil Banerjee
-*
-*
-* This software is published under a dual-license: GNU Lesser General Public
-* License LGPL 2.1 and Modified BSD license. The dual-license implies that
-* users of this code may choose which terms they prefer.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Lesser General Public License LGPL and the BSD license for
-* more details.
-*
-******************************************************************************/
+ * BRICS_3D - 3D Perception and Modeling Library
+ * Copyright (c) 2011, GPS GmbH
+ *
+ * Author: Pinaki Sunil Banerjee
+ *
+ *
+ * This software is published under a dual-license: GNU Lesser General Public
+ * License LGPL 2.1 and Modified BSD license. The dual-license implies that
+ * users of this code may choose which terms they prefer.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Lesser General Public License LGPL and the BSD license for
+ * more details.
+ *
+ ******************************************************************************/
 
 #include "PoseEstimation6D.h"
 
@@ -67,26 +67,26 @@ PoseEstimation6D::PoseEstimation6D() {
 
 
 	//ToDO initialize
-//	bestTransformation[0]=0;
-//	bestTransformation[1]=0;
-//	bestTransformation[2]=0;
-//	bestTransformation[3]=0;
-//	bestTransformation[4]=0;
-//	bestTransformation[5]=0;
-//	bestTransformation[6]=0;
-//	bestTransformation[7]=0;
-//	bestTransformation[8]=0;
-//	bestTransformation[9]=0;
-//	bestTransformation[10]=0;
-//	bestTransformation[11]=0;
-//	bestTransformation[12]=0;
-//	bestTransformation[13]=0;
-//	bestTransformation[14]=0;
-//	bestTransformation[15]=0;
+	//	bestTransformation[0]=0;
+	//	bestTransformation[1]=0;
+	//	bestTransformation[2]=0;
+	//	bestTransformation[3]=0;
+	//	bestTransformation[4]=0;
+	//	bestTransformation[5]=0;
+	//	bestTransformation[6]=0;
+	//	bestTransformation[7]=0;
+	//	bestTransformation[8]=0;
+	//	bestTransformation[9]=0;
+	//	bestTransformation[10]=0;
+	//	bestTransformation[11]=0;
+	//	bestTransformation[12]=0;
+	//	bestTransformation[13]=0;
+	//	bestTransformation[14]=0;
+	//	bestTransformation[15]=0;
 
-//	translation[0] = 0;
-//	translation[1] = 0;
-//	translation[2] = 0;
+	//	translation[0] = 0;
+	//	translation[1] = 0;
+	//	translation[2] = 0;
 
 	centroid3DEstimator =  new BRICS_3D::Centroid3D();
 	this->noOfFramesProcessed=0;
@@ -248,69 +248,78 @@ void PoseEstimation6D::estimatePose(BRICS_3D::PointCloud3D *in_cloud, int objCou
 	}
 
 
-    double yRot = asin (-(*(bestTransformation[objCount]))(2));
-    double xRot = asin ((*(bestTransformation[objCount]))(6)/cos(yRot));
-    double zRot = asin ((*(bestTransformation[objCount]))(1)/cos(yRot));
+	double yRot = asin (-(*(bestTransformation[objCount]))(2));
+	double xRot = asin ((*(bestTransformation[objCount]))(6)/cos(yRot));
+	double zRot = asin ((*(bestTransformation[objCount]))(1)/cos(yRot));
 
-//	Eigen::Matrix4f  tempHomogenousMatrix;
-//  calculateHomogeneousMatrix(xRot, yRot, zRot, translation[0], translation[1], translation[2],tempHomogenousMatrix,0);
+	//	Eigen::Matrix4f  tempHomogenousMatrix;
+	//  calculateHomogeneousMatrix(xRot, yRot, zRot, translation[0], translation[1], translation[2],tempHomogenousMatrix,0);
 
-    static tf::TransformBroadcaster br;
-     tf::Transform transform;
-     transform.setOrigin( tf::Vector3(xtranslation[objCount], ytranslation[objCount], ztranslation[objCount]) );
-     //Todo stop using Quaternion
-     transform.setRotation( tf::Quaternion(xRot, yRot, zRot) );
-     std::stringstream ss;
-     ss << regionLabel << "_object_" << objCount;
-     br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "/openni_rgb_optical_frame",
-    		 ss.str()));
+	static tf::TransformBroadcaster br;
+	tf::Transform transform;
+	transform.setOrigin( tf::Vector3(xtranslation[objCount], ytranslation[objCount], ztranslation[objCount]) );
+	//Todo stop using Quaternion
+	transform.setRotation( tf::Quaternion(xRot, yRot, zRot) );
+	std::stringstream ss;
+	ss << regionLabel << "_object_" << objCount;
+	br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "/openni_rgb_optical_frame",
+			ss.str()));
 
 
-     //********************************************************************************************************Accuray Tests
-	 tf::TransformListener listener;
-	 tf::StampedTransform transform_gt_frame;
+	//********************************************************************************************************Accuray Tests
+	tf::TransformListener listener;
+	tf::StampedTransform transform_gt_frame;
 
- 	//wait and listen to current xyz GT Frame
-	    try{
-	    	listener.waitForTransform("/openni_rgb_optical_frame","/gt_frame",
-	    				ros::Time::now(), ros::Duration(10.0));
-	      listener.lookupTransform("/openni_rgb_optical_frame","/gt_frame",
-	    		  ros::Time(0), transform_gt_frame);
-	    }
-	    catch (tf::TransformException ex){
-	      ROS_ERROR("%s",ex.what());
-	    }
+	//wait and listen to current xyz GT Frame
+	try{
+		listener.waitForTransform("/openni_rgb_optical_frame","/gt_frame",
+				ros::Time::now(), ros::Duration(10.0));
+		listener.lookupTransform("/openni_rgb_optical_frame","/gt_frame",
+				ros::Time(0), transform_gt_frame);
+	}
+	catch (tf::TransformException ex){
+		ROS_ERROR("%s",ex.what());
+	}
 
-	    double x_gt_frame = transform_gt_frame.getOrigin().getX();
-	    double y_gt_frame = transform_gt_frame.getOrigin().getY();
-	    double z_gt_frame = transform_gt_frame.getOrigin().getZ();
+	double x_gt_frame = transform_gt_frame.getOrigin().getX();
+	double y_gt_frame = transform_gt_frame.getOrigin().getY();
+	double z_gt_frame = transform_gt_frame.getOrigin().getZ();
 
-	    double x_error = xtranslation[objCount] - x_gt_frame;
-	    double y_error = ytranslation[objCount] - y_gt_frame;
-	    double z_error = ztranslation[objCount] - z_gt_frame;
+	double x_error = xtranslation[objCount] - x_gt_frame;
+	double y_error = ytranslation[objCount] - y_gt_frame;
+	double z_error = ztranslation[objCount] - z_gt_frame;
 
-	    double	euclideanDistance = std::sqrt( (x_error*x_error) + (y_error*y_error) + (z_error*z_error) );
+	double	euclideanDistance = std::sqrt( (x_error*x_error) + (y_error*y_error) + (z_error*z_error) );
 
-    /**
-     *  write to processing logs:
-     *  <3D_Position_GT_FRAME> <3D_estimated_Position> <Diff_3D_Positions> <Euclidean_distances> <CUrrent_Best_Score> <2D/3D>
-     */
-	    if(twoD){
-	    *positionAccuracyLogs 	<<	x_gt_frame << "\t" << y_gt_frame << "\t" << z_gt_frame << "\t"
-	    						<< xtranslation[objCount] << "\t" << ytranslation[objCount] << "\t" << ztranslation[objCount]
-	    						<< "\t" << x_error << "\t" << y_error << "\t" << z_error << "\t" << euclideanDistance << "\t" << score2D << "\t0\n";
-	    } else {
-	    *positionAccuracyLogs 	<<	x_gt_frame << "\t" << y_gt_frame << "\t" << z_gt_frame << "\t"
-	      						<< xtranslation[objCount] << "\t" << ytranslation[objCount] << "\t" << ztranslation[objCount]
-	       						<< "\t" << x_error << "\t" << y_error << "\t" << z_error << "\t" << euclideanDistance << "\t" << score3D << "\t1\n";
-	    }
-     //********************************************************************************************************Accuray Tests
+	/**
+	 *  write to processing logs:
+	 *  <3D_Position_GT_FRAME> <3D_estimated_Position> <Diff_3D_Positions> <Euclidean_distances> <CUrrent_Best_Score> <2D/3D>
+	 */
+	if(!std::isnan(x_gt_frame) && !std::isnan(y_gt_frame) && !std::isnan(z_gt_frame) &&
+			!std::isinf(x_gt_frame) && !std::isinf(y_gt_frame) && !std::isinf(z_gt_frame) &&
+				noOfFramesProcessed<=100){
+		if(twoD){
+			*positionAccuracyLogs 	<<	x_gt_frame << "\t" << y_gt_frame << "\t" << z_gt_frame << "\t"
+					<< xtranslation[objCount] << "\t" << ytranslation[objCount] << "\t" << ztranslation[objCount]
+					                                                                                    << "\t" << x_error << "\t" << y_error << "\t" << z_error << "\t" << euclideanDistance << "\t" << score2D << "\t0\n";
+		} else {
+			*positionAccuracyLogs 	<<	x_gt_frame << "\t" << y_gt_frame << "\t" << z_gt_frame << "\t"
+					<< xtranslation[objCount] << "\t" << ytranslation[objCount] << "\t" << ztranslation[objCount]
+					                                                                                    << "\t" << x_error << "\t" << y_error << "\t" << z_error << "\t" << euclideanDistance << "\t" << score3D << "\t1\n";
+		}
+		noOfFramesProcessed++;
+	}
+
+	//********************************************************************************************************Accuray Tests
 
 	delete finalModel2D;
 	delete finalModel3D;
 	delete transformedCubeModel2D;
 	delete transformedCubeModel3D;
 
+	if(noOfFramesProcessed>100){
+		ROS_WARN("Logging Completed");
+	}
 }
 
 void PoseEstimation6D::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
@@ -320,7 +329,7 @@ void PoseEstimation6D::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
 
 	BRICS_3D::ColoredPointCloud3D *in_cloud = new BRICS_3D::ColoredPointCloud3D();
-	BRICS_3D::PointCloud3D *color_based_roi = new BRICS_3D::ColoredPointCloud3D();
+	BRICS_3D::PointCloud3D *color_based_roi = new BRICS_3D::PointCloud3D();
 	std::vector<BRICS_3D::PointCloud3D*> extracted_clusters;
 
 	//Transform sensor_msgs::PointCloud2 msg to pcl::PointCloud

@@ -88,7 +88,6 @@ void ColorBasedRoiExtractor::kinectCloudCallback(const sensor_msgs::PointCloud2 
 	double processing_time = processingTimer.elapsed();
 	//endProcessing=clock();
 	ROS_INFO("Size of extracted cloud : %d ", extracted_cloud->getSize());
-
 	if(noOfFramesProcessed<100)
 	*processingLogs  << this->noOfFramesProcessed << " " << cloud_xyz_rgb_ptr->size() << " "<<
 					processing_time << " " <<"\n";
