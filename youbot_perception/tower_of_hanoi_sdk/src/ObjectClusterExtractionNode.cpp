@@ -35,23 +35,6 @@
 #include <stdlib.h>
 #include <sstream>
 
-/**
- * usage: rosrun tower_of_hanoi_sdk objectClusterExtractor <no_of_regions> <max_no_of_objects_in_each_region>
- *
- * Finds object clusters from the hsv-based extracted regions of interests
- *
- * Arguments:
- * <no_of_regions> 	: corresponds to the count of difrent regions of intersets, ex: green, red
- * 					: default value 1
- * <max_no_objects> : max number of object clusters possible in each region
- * 					: default value 1
- * Topic published:
- *  region_1_obj_cluster_1, region_1_obj_cluster_2, region_2_obj_cluster_1 ......
- *  type: Pointcloud2 message
- *  frame_id: openni_rgb_optical_frame
- */
-
-
 //global variables
 BRICS_3D::EuclideanClusterExtractor *objectClusterExtractor;
 int maxNoOfObjects;

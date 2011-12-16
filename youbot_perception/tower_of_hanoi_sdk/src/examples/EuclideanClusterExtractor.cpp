@@ -54,11 +54,6 @@ void EuclideanClusterExtractor::kinectCloudCallback(const sensor_msgs::PointClou
 	//ToDo assert if every thing is initialized or not
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_xyz_rgb_ptr(new pcl::PointCloud<pcl::PointXYZRGB>());
-
-
-
-
-
     //Transform sensor_msgs::PointCloud2 msg to pcl::PointCloud
     pcl::fromROSMsg (cloud, *cloud_xyz_rgb_ptr);
 

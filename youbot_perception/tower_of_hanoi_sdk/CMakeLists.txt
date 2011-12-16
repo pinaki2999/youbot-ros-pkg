@@ -43,37 +43,88 @@ INCLUDE_DIRECTORIES(
 
 #ADD_SUBDIRECTORY(./lib) #compile everything in lib to create the libraries
 
+#===========================================================================================
 #executable for color based region of interest extraction
-rosbuild_add_executable(colorBasedRoiExtractor src/ColorBasedRoiExtractionNode.cpp 
-						src/examples/ColorBasedRoiExtractor)
-target_link_libraries(colorBasedRoiExtractor brics3d_util.a brics3d_algorithm brics3d_core)
+rosbuild_add_executable(	colorBasedRoiExtractor 
+							src/ColorBasedRoiExtractionNode.cpp 
+							src/examples/ColorBasedRoiExtractor)
 
+target_link_libraries(	colorBasedRoiExtractor 
+						brics3d_util 
+						brics3d_algorithm 
+						brics3d_core)
+#===========================================================================================
 #executable for hsv configuration finder
-rosbuild_add_executable(hsvLimitsFinder src/HSVLimitsFinderNode.cpp 
-						src/examples/ColorBasedRoiExtractor)
-target_link_libraries(hsvLimitsFinder  brics3d_util brics3d_algorithm brics3d_core)
-
+rosbuild_add_executable(	hsvLimitsFinder 
+							src/HSVLimitsFinderNode.cpp 
+							src/examples/ColorBasedRoiExtractor)
+							
+target_link_libraries(	hsvLimitsFinder  
+						brics3d_util 
+						brics3d_algorithm 
+						brics3d_core)
+#===========================================================================================
 #executable for object cluster extraction
-rosbuild_add_executable(objectClusterExtractor src/ObjectClusterExtractionNode.cpp 
-						src/examples/EuclideanClusterExtractor lib/EuclideanClustering)
-target_link_libraries(objectClusterExtractor   
-										brics3d_util brics3d_algorithm brics3d_core)
-
+rosbuild_add_executable(	objectClusterExtractor 
+							src/ObjectClusterExtractionNode.cpp 
+							src/examples/EuclideanClusterExtractor 
+							lib/EuclideanClustering)
+							
+target_link_libraries(	objectClusterExtractor   
+						brics3d_util
+						brics3d_algorithm 
+						brics3d_core)
+#===========================================================================================
+#executable for rgb-color based Euclidean cluster extraction
+rosbuild_add_executable(	gopalColoredEuclideanClusterExtractor 
+							src/RGBColorBasedEuclideanClusteringNode.cpp
+							src/examples/ColorBasedEuclideanClusterExtractor
+							lib/RGBColorBasedEuclideanClustering)
+							
+target_link_libraries(	gopalColoredEuclideanClusterExtractor   
+						brics3d_util 
+						brics3d_algorithm 
+						brics3d_core)										
+#===========================================================================================
+#executable for object cluster extraction
+rosbuild_add_executable(	objectClusterExtractor 	
+							src/ObjectClusterExtractionNode.cpp 
+							src/examples/EuclideanClusterExtractor 
+							lib/EuclideanClustering)
+							
+target_link_libraries(	objectClusterExtractor   
+						brics3d_util 
+						brics3d_algorithm 
+						brics3d_core)
+#===========================================================================================
 #executable for Model Fitting using ICP
-rosbuild_add_executable(modelFittingICP src/ModelFittingICPNode.cpp 
-						src/examples/ModelFitting lib/IterativeClosestPoint)
-target_link_libraries(modelFittingICP   
-										brics3d_util brics3d_algorithm brics3d_core)										
-
-										
+rosbuild_add_executable(	modelFittingICP 
+							src/ModelFittingICPNode.cpp 
+							src/examples/ModelFitting 
+							lib/IterativeClosestPoint)
+							
+target_link_libraries(	modelFittingICP   
+						brics3d_util 
+						brics3d_algorithm 
+						brics3d_core)										
+#===========================================================================================										
 #executable for 6D Pose Estimation
-rosbuild_add_executable(poseEstimator6D src/PoseEstimation6DNode.cpp 
-						src/examples/PoseEstimation6D lib/IterativeClosestPoint lib/EuclideanClustering)
-target_link_libraries(poseEstimator6D   
-										brics3d_util brics3d_algorithm brics3d_core)
-										
+rosbuild_add_executable(	poseEstimator6D 
+							src/PoseEstimation6DNode.cpp 
+							src/examples/PoseEstimation6D 
+							lib/IterativeClosestPoint 
+							lib/EuclideanClustering)
+							
+target_link_libraries(	poseEstimator6D   
+						brics3d_util 
+						brics3d_algorithm 
+						brics3d_core)
+#===========================================================================================										
 #executable for controlling the perception system
-rosbuild_add_executable(perceptionEngineController src/ControlPerception.cpp)
-
+rosbuild_add_executable(	perceptionEngineController 
+							src/ControlPerception.cpp)
+#===========================================================================================
 #executable for configuring the perception system
-rosbuild_add_executable(perceptionEngineConfigurator src/ConfigurePerception.cpp)
+rosbuild_add_executable(	perceptionEngineConfigurator 
+							src/ConfigurePerception.cpp)
+#===========================================================================================
