@@ -236,16 +236,16 @@ int main(int argc, char* argv[]){
 		//Initializing the limits in HSV space to extract the ROI
 		poseEstimators[i]->initializeLimits(minLimitH[i], maxLimitH[i], minLimitS[i], maxLimitS[i]);
 		//Initializing the cluster extractor limits
-		poseEstimators[i]->initializeClusterExtractor(200,10000,0.01);
+		poseEstimators[i]->initializeClusterExtractor(100,2000,0.01);
 
 		std::stringstream logName;
 		logName.str("");
 		logName << argv[argc-1] << "_accuracy_position_" << i+1 << ".log";
-		positionAccuracyLogs[i].open(logName.str().c_str());
+	//	positionAccuracyLogs[i].open(logName.str().c_str());
 
 		logName.str("");
 		logName << argv[argc-1] << "_accuracy_rotation_" << i+1 << ".log";
-		rotationAccuracyLogs[i].open(logName.str().c_str());
+	//	rotationAccuracyLogs[i].open(logName.str().c_str());
 
 		poseEstimators[i]->setPositionAccuracyLogs(&positionAccuracyLogs[i]);
 		poseEstimators[i]->setRotationAccuracyLogs(&rotationAccuracyLogs[i]);

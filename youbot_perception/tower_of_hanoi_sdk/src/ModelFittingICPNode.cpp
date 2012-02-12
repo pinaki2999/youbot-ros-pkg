@@ -80,7 +80,8 @@ int main(int argc, char* argv[]){
 		}
 	}
 
-	std::ofstream processingLogs[noOfRegions][maxNoOfObjects], frameDelayLogs[noOfRegions][maxNoOfObjects];
+	std::ofstream processingLogs[noOfRegions][maxNoOfObjects], frameDelayLogs[noOfRegions][maxNoOfObjects],
+					accuracyLogs[noOfRegions][maxNoOfObjects];
 
 	//subscribe to kinect point cloud messages
 	ros::Subscriber  objectClusterSubscriber[noOfRegions*maxNoOfObjects];
@@ -96,22 +97,28 @@ int main(int argc, char* argv[]){
         	poseEstimator[i][j].setModelPublisher(&estimatedModelPublisher[i][j]);
 
         	std::stringstream logFileName;
-        	logFileName << argv[argc-1]<< "processing_" << i+1 << "_" << j+1<< ".log";
-        	processingLogs[i][j].open(logFileName.str().c_str());
+//        	logFileName << argv[argc-1]<< "processing_" << i+1 << "_" << j+1<< ".log";
+//        	processingLogs[i][j].open(logFileName.str().c_str());
+//
+//        	logFileName.str("");
+//        	logFileName << argv[argc-1] << "frame_delay_" << i+1 << "_" << j+1<< ".log";
+//        	frameDelayLogs[i][j].open(logFileName.str().c_str());
 
         	logFileName.str("");
-        	logFileName << argv[argc-1] << "frame_delay_" << i+1 << "_" << j+1<< ".log";
-        	frameDelayLogs[i][j].open(logFileName.str().c_str());
+        	logFileName << argv[argc-1] << "accuracy_" << i+1 << "_" << j+1<< ".log";
+        	accuracyLogs[i][j].open(logFileName.str().c_str());
+
 
     		frameDelayLogs[i][j].setf(std::ios::fixed,std::ios::floatfield);
     		frameDelayLogs[i][j].precision(9);
     		processingLogs[i][j].setf(std::ios::fixed,std::ios::floatfield);
     		processingLogs[i][j].precision(9);
-
+    		accuracyLogs[i][j].setf(std::ios::fixed,std::ios::floatfield);
+    		accuracyLogs[i][j].precision(9);
 
         	poseEstimator[i][j].setProcessingLogs(&processingLogs[i][j]);
         	poseEstimator[i][j].setFrameDelayLogs(&frameDelayLogs[i][j]);
-
+        	poseEstimator[i][j].setAccuracyLogs(&accuracyLogs[i][j]);
         	count++;
 		}
     }

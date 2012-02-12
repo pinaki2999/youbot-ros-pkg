@@ -109,6 +109,7 @@ class ModelFitting {
 	 */
 	std::ofstream *processingLogs;
 	std::ofstream *frameDelayLogs;
+	std::ofstream *accuracyLogs;
 
 	boost::timer processingTimer;
 	boost::timer frameDelayTimer;
@@ -199,6 +200,12 @@ public:
     void setProcessingLogs(std::ofstream *processingLogs)
     {
         this->processingLogs = processingLogs;
+        this->noOfFramesProcessed=0;
+    }
+
+    void setAccuracyLogs(std::ofstream *accuracyLogs)
+    {
+        this->accuracyLogs = accuracyLogs;
         this->noOfFramesProcessed=0;
     }
 

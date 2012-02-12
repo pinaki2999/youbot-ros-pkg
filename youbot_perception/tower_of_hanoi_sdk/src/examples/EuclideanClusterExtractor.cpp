@@ -63,15 +63,15 @@ void EuclideanClusterExtractor::kinectCloudCallback(const sensor_msgs::PointClou
     if(cloud_xyz_rgb_ptr->size() > this->euclideanClusterExtractor.getMinClusterSize()){
 
 
-    	if(this->noOfFramesProcessed!=1 && this->noOfFramesProcessed<100 ){
-    			*frameDelayLogs << this->noOfFramesProcessed << "\t"<<  cloud_xyz_rgb_ptr->size() << "\t" <<
-    							frameDelayTimer.elapsed()<< "\n";
-
-    			frameDelayTimer.restart();
-
-    	} else {
-    		frameDelayTimer.restart();
-    	}
+//    	if(this->noOfFramesProcessed!=1 && this->noOfFramesProcessed<100 ){
+//    			*frameDelayLogs << this->noOfFramesProcessed << "\t"<<  cloud_xyz_rgb_ptr->size() << "\t" <<
+//    							frameDelayTimer.elapsed()<< "\n";
+//
+//    			frameDelayTimer.restart();
+//
+//    	} else {
+//    		frameDelayTimer.restart();
+//    	}
 
         BRICS_3D::PointCloud3D *in_cloud = new BRICS_3D::PointCloud3D();
         std::vector<BRICS_3D::PointCloud3D*> extracted_clusters;
@@ -80,14 +80,14 @@ void EuclideanClusterExtractor::kinectCloudCallback(const sensor_msgs::PointClou
 
     //-------------------------------------------------------------------------------------------
     //extract the clusters
-    processingTimer.restart();
+  //  processingTimer.restart();
     euclideanClusterExtractor.extractClusters(in_cloud, &extracted_clusters);
 
     ROS_INFO("No of clusters found: %d", extracted_clusters.size());
-	if(noOfFramesProcessed<100)
-	*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_rgb_ptr->size() << "\t"<<
-						processingTimer.elapsed() <<
-						"\t" << extracted_clusters.size() << "\n";
+//	if(noOfFramesProcessed<100)
+//	*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_rgb_ptr->size() << "\t"<<
+//						processingTimer.elapsed() <<
+//						"\t" << extracted_clusters.size() << "\n";
 	//-------------------------------------------------------------------------------------------
 
 
@@ -117,11 +117,13 @@ void EuclideanClusterExtractor::kinectCloudCallback(const sensor_msgs::PointClou
          transform.setRotation( tf::Quaternion(0, 0, 0) );
          br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "/openni_rgb_optical_frame",
         		 extractedClusterPublisher[i].getTopic()));
+         delete extracted_clusters[i];
     	}
     }
 
     tempCloud.reset();
     delete(in_cloud);
+
     extracted_clusters.clear();
     }
 

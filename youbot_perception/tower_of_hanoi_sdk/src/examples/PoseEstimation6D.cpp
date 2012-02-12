@@ -41,7 +41,7 @@ PoseEstimation6D::PoseEstimation6D() {
 	cube3D = new BRICS_3D::PointCloud3D();
 
 	cubeModelGenerator.setPointsOnEachSide(5);
-	cubeModelGenerator.setCubeSideLength(0.06);
+	cubeModelGenerator.setCubeSideLength(0.048);
 
 	cubeModelGenerator.setNumOfFaces(2);
 	cubeModelGenerator.generatePointCloud(cube2D);
@@ -186,7 +186,7 @@ void PoseEstimation6D::estimatePose(BRICS_3D::PointCloud3D *in_cloud, int objCou
 		transformedCubeModel3D->addPoint(tempPoint);
 		delete tempPoint;
 	}
-	ROS_INFO("Resultant cloud size: %d", transformedCubeModel3D->getSize());
+	ROS_INFO("Resultant cloud size of 3D model: %d", transformedCubeModel3D->getSize());
 	transformedCubeModel3D->homogeneousTransformation(homogeneousTrans);
 
 	BRICS_3D::PointCloud3D *finalModel2D = new BRICS_3D::PointCloud3D();
@@ -255,57 +255,88 @@ void PoseEstimation6D::estimatePose(BRICS_3D::PointCloud3D *in_cloud, int objCou
 	//	Eigen::Matrix4f  tempHomogenousMatrix;
 	//  calculateHomogeneousMatrix(xRot, yRot, zRot, translation[0], translation[1], translation[2],tempHomogenousMatrix,0);
 
+//	static tf::TransformBroadcaster br;
+//	tf::Transform transform;
+//	transform.setOrigin( tf::Vector3(xtranslation[objCount], ytranslation[objCount], ztranslation[objCount]) );
+//	//Todo stop using Quaternion
+//	transform.setRotation( tf::Quaternion(xRot, yRot, zRot) );
+//	std::stringstream ss;
+//	ss << regionLabel << "_object_" << objCount;
+//	br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "/openni_rgb_optical_frame",
+//			ss.str()));
+
+
+	//********************************************************************************************************Accuray Tests
+	tf::TransformListener listener;
+	tf::StampedTransform transform_mati;
+
+
+	//wait and listen to current xyz GT Frame
+	try{
+		listener.waitForTransform("/openni_rgb_optical_frame","/mati",
+				ros::Time::now(), ros::Duration(10.0));
+		listener.lookupTransform("/openni_rgb_optical_frame","/mati",
+				ros::Time(0), transform_mati);
+	}
+	catch (tf::TransformException ex){
+		ROS_ERROR("%s",ex.what());
+	}
+
+//	try{
+//		listener.waitForTransform("/mati",ss.str(),
+//				ros::Time::now(), ros::Duration(10.0));
+//		listener.lookupTransform("/mati",ss.str(),
+//				ros::Time(0), transform_mati);
+//	}
+//	catch (tf::TransformException ex){
+//		ROS_ERROR("%s",ex.what());
+//	}
+
+
+	double x_mati = transform_mati.getOrigin().getX();
+	double y_mati = transform_mati.getOrigin().getY();
+	double z_mati = transform_mati.getOrigin().getZ();
+
+	double x_rot = transform_mati.getRotation().getX();
+	double y_rot = transform_mati.getRotation().getY();
+	double z_rot = transform_mati.getRotation().getZ();
+
+
+
+//	double x_error = xtranslation[objCount] - x_gt_frame;
+//	double y_error = ytranslation[objCount] - y_gt_frame;
+//	double z_error = ztranslation[objCount] - z_gt_frame;
+//
+//	double	euclideanDistance = std::sqrt( (x_error*x_error) + (y_error*y_error) + (z_error*z_error) );
+
 	static tf::TransformBroadcaster br;
 	tf::Transform transform;
 	transform.setOrigin( tf::Vector3(xtranslation[objCount], ytranslation[objCount], ztranslation[objCount]) );
 	//Todo stop using Quaternion
-	transform.setRotation( tf::Quaternion(xRot, yRot, zRot) );
+	//transform.setRotation( tf::Quaternion(x_rot-xRot, y_rot-yRot, z_rot-zRot) );
+	//transform.setRotation( tf::Quaternion(xrot, yRot, zRot) );
+	transform.setRotation( tf::Quaternion(x_rot, y_rot, z_rot) );
 	std::stringstream ss;
 	ss << regionLabel << "_object_" << objCount;
 	br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "/openni_rgb_optical_frame",
 			ss.str()));
 
 
-	//********************************************************************************************************Accuray Tests
-	tf::TransformListener listener;
-	tf::StampedTransform transform_gt_frame;
-
-	//wait and listen to current xyz GT Frame
-	try{
-		listener.waitForTransform("/openni_rgb_optical_frame","/gt_frame",
-				ros::Time::now(), ros::Duration(10.0));
-		listener.lookupTransform("/openni_rgb_optical_frame","/gt_frame",
-				ros::Time(0), transform_gt_frame);
-	}
-	catch (tf::TransformException ex){
-		ROS_ERROR("%s",ex.what());
-	}
-
-	double x_gt_frame = transform_gt_frame.getOrigin().getX();
-	double y_gt_frame = transform_gt_frame.getOrigin().getY();
-	double z_gt_frame = transform_gt_frame.getOrigin().getZ();
-
-	double x_error = xtranslation[objCount] - x_gt_frame;
-	double y_error = ytranslation[objCount] - y_gt_frame;
-	double z_error = ztranslation[objCount] - z_gt_frame;
-
-	double	euclideanDistance = std::sqrt( (x_error*x_error) + (y_error*y_error) + (z_error*z_error) );
-
 	/**
 	 *  write to processing logs:
 	 *  <3D_Position_GT_FRAME> <3D_estimated_Position> <Diff_3D_Positions> <Euclidean_distances> <CUrrent_Best_Score> <2D/3D>
 	 */
-	if(!std::isnan(x_gt_frame) && !std::isnan(y_gt_frame) && !std::isnan(z_gt_frame) &&
-			!std::isinf(x_gt_frame) && !std::isinf(y_gt_frame) && !std::isinf(z_gt_frame) &&
+	if(!std::isnan(x_mati) && !std::isnan(y_mati) && !std::isnan(z_mati) &&
+			!std::isinf(x_mati) && !std::isinf(y_mati) && !std::isinf(z_mati) &&
 				noOfFramesProcessed<=100){
 		if(twoD){
-			*positionAccuracyLogs 	<<	x_gt_frame << "\t" << y_gt_frame << "\t" << z_gt_frame << "\t"
-					<< xtranslation[objCount] << "\t" << ytranslation[objCount] << "\t" << ztranslation[objCount]
-					                                                                                    << "\t" << x_error << "\t" << y_error << "\t" << z_error << "\t" << euclideanDistance << "\t" << score2D << "\t0\n";
+//			*positionAccuracyLogs 	<<	x_gt_frame << "\t" << y_gt_frame << "\t" << z_gt_frame << "\t"
+//					<< xtranslation[objCount] << "\t" << ytranslation[objCount] << "\t" << ztranslation[objCount]
+//					                                                                                    << "\t" << x_error << "\t" << y_error << "\t" << z_error << "\t" << euclideanDistance << "\t" << score2D << "\t0\n";
 		} else {
-			*positionAccuracyLogs 	<<	x_gt_frame << "\t" << y_gt_frame << "\t" << z_gt_frame << "\t"
-					<< xtranslation[objCount] << "\t" << ytranslation[objCount] << "\t" << ztranslation[objCount]
-					                                                                                    << "\t" << x_error << "\t" << y_error << "\t" << z_error << "\t" << euclideanDistance << "\t" << score3D << "\t1\n";
+//			*positionAccuracyLogs 	<<	x_gt_frame << "\t" << y_gt_frame << "\t" << z_gt_frame << "\t"
+//					<< xtranslation[objCount] << "\t" << ytranslation[objCount] << "\t" << ztranslation[objCount]
+//					                                                                                    << "\t" << x_error << "\t" << y_error << "\t" << z_error << "\t" << euclideanDistance << "\t" << score3D << "\t1\n";
 		}
 		noOfFramesProcessed++;
 	}

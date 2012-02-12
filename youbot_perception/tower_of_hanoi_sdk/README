@@ -189,7 +189,7 @@
 		-- No of regions of interests to be extracted
 		-- Maximum number of object to be found in each ROI
 		-- HSV-Limits Configuration Files with full path
-		-- Region Labes used by the nodes to publish the transforms
+		-- Region Labels used by the nodes to publish the transforms
 	
 	
 	2-f Controlling the Pose-Estimation Node

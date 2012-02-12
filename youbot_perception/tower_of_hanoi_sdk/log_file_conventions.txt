@@ -37,6 +37,10 @@
 	
 		<frame_no>	<input_cluster_size>	<time_for_model_fitting> 	<current_best_score>		<overall_best_score>	<fitted_model : 2D/3D (0/1)>
 
+	----------------
+		<frame_no>	<x_wrt_camera>		<y_wrt_camera>		<z_wrt_camera>		<x_rot_wrt_camera>		<y_rot_wrt_camera>		<z_rot_wrt_camera>	<best_score>	<twoD/threeD> 	
+
+
 		
 *Accuracy Test log files
 ------------------------
@@ -52,6 +56,8 @@
 
 	<resolution_input>_<no_of_objects>_<faces_visible>_accuracy_position_<object/region number>.log
 	<resolution_input>_<no_of_objects>_<faces_visible>_accuracy_rotation_<object/region number>.log
+
+	<resolution_input>_<no_of_objects>_<degrees>_model_fitting_accuracy.log
 
 => Data stored
 --------------

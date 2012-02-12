@@ -93,3 +93,6 @@ rosbuild_add_executable(gopalLogFileParser src/experiments/LogFileParsers.cpp)
 rosbuild_add_executable(gopalRGBLimitsFinder src/RGBLimitsFinderNode.cpp 
 						src/examples/ColorBasedRoiExtractor_RGB)
 target_link_libraries(gopalRGBLimitsFinder  brics3d_util brics3d_algorithm brics3d_core)
+
+#executable for hsv configuration finder
+rosbuild_add_executable(gopalPlaneestimator src/PlaneEstimator.cpp)

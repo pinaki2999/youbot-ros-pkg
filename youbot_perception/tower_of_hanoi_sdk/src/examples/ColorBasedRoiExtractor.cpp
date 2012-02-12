@@ -110,7 +110,7 @@ void ColorBasedRoiExtractor::kinectCloudCallback(const sensor_msgs::PointCloud2 
 
 		this->noOfFramesProcessed++;
 
-		if(noOfFramesProcessed>100){
+		if(noOfFramesProcessed>10){
 			ROS_WARN("Logging Completed");
 //			exit(0);
 		}

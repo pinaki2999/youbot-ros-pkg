@@ -26,8 +26,8 @@ ModelFitting::ModelFitting() {
 	cube2D = new BRICS_3D::PointCloud3D();
 	cube3D = new BRICS_3D::PointCloud3D();
 
-	cubeModelGenerator.setPointsOnEachSide(5);
-	cubeModelGenerator.setCubeSideLength(0.057);
+	cubeModelGenerator.setPointsOnEachSide(7);
+	cubeModelGenerator.setCubeSideLength(0.05);
 
 	cubeModelGenerator.setNumOfFaces(2);
 	cubeModelGenerator.generatePointCloud(cube2D);
@@ -135,6 +135,9 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 	poseEstimatorICP->setObjectModel(transformedCubeModel2D);
 	poseEstimatorICP->estimateBestFit(in_cloud, finalModel2D);
 
+    float score2D = poseEstimatorICP->getFitnessScore();
+	Eigen::Matrix4f transformation2D=poseEstimatorICP->getFinalTransformation();
+
 	//Performing 3D model alignment
 	poseEstimatorICP->setObjectModel(transformedCubeModel3D);
 	poseEstimatorICP->estimateBestFit(in_cloud, finalModel3D);
@@ -144,15 +147,14 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 	//perform HSV color based extraction
     processingTimer.restart();
 	//***************************************************************************
-    float score2D = poseEstimatorICP->getFitnessScore();
-	Eigen::Matrix4f transformation2D=poseEstimatorICP->getFinalTransformation();
+
 
 	float score3D = poseEstimatorICP->getFitnessScore();
 	Eigen::Matrix4f transformation3D=poseEstimatorICP->getFinalTransformation();
-	bool twoD=false;
+	int twoD=2;
 	if(score2D<score3D){
 			//publish model estimated using two sided cube
-			if(score2D < bestScore){
+//			if(score2D < bestScore){
 				if(score2D > reliableScoreThreshold){
 					ROS_INFO("[%s] Approximate Model Found(2D)!! Object May Not be visible enough...",
 							modelPublisher->getTopic().c_str());
@@ -165,54 +167,63 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 				ztranslation=centroid3d[2];
 				*bestTransformation = transformation2D;
 				bestScore = score2D;
-			}
+//			}
 			pclTypecaster.convertToPCLDataType(estimated_model_ptr,finalModel2D);
 			ROS_INFO("Best score found by 3D model : %f", score2D);
 
-			twoD=true;
+			twoD=2;
 		} else {
 			//publish model estimated using three sided cube
-			if(score3D<bestScore){
+//			if(score3D<bestScore){
 				if(score3D > reliableScoreThreshold){
 					ROS_INFO("[%s] Approximate Model Found(3D)!! Object May Not be visible enough...",
 							modelPublisher->getTopic().c_str());
 				}else {
 					ROS_INFO("[%s] Reliable Model Found(3D) :) ", modelPublisher->getTopic().c_str());
 				}
-				centroid3d = centroidEstimator.computeCentroid(finalModel2D);
+				centroid3d = centroidEstimator.computeCentroid(finalModel3D);
 				xtranslation=centroid3d[0];
 				ytranslation=centroid3d[1];
 				ztranslation=centroid3d[2];
 				*bestTransformation = transformation3D;
 				bestScore=score3D;
-			}
+//			}
 			pclTypecaster.convertToPCLDataType(estimated_model_ptr,finalModel3D);
 			ROS_INFO("Best score found by 3D model : %f", score3D);
-			twoD=false;
+			twoD=3;
 		}
 
-	//***************************************************************************
-	//endProcessing=clock();
-	double processingTime = processingTimer.elapsed();
-	if(noOfFramesProcessed<100){
-		if(twoD){
-			*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_ptr->size() << "\t"<<
-								processingTime
-								<< "\t"<< score2D << "\t" << bestScore << "\t0\n";
 
-		}else{
-			*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_ptr->size() << "\t"<<
-								processingTime
-								<< "\t"<< score3D << "\t" << bestScore << "\t1\n";
-		}
-	}
-	//-------------------------------------------------------------------------------------------
 
 
 
     double yRot = asin (-(*(bestTransformation))(2));
     double xRot = asin ((*(bestTransformation))(6)/cos(yRot));
     double zRot = asin ((*(bestTransformation))(1)/cos(yRot));
+
+
+	//***************************************************************************
+	//endProcessing=clock();
+//	double processingTime = processingTimer.elapsed();
+//	if(noOfFramesProcessed<100){
+//		if(twoD){
+//			*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_ptr->size() << "\t"<<
+//								processingTime
+//								<< "\t"<< score2D << "\t" << bestScore << "\t0\n";
+//
+//		}else{
+//			*processingLogs << this->noOfFramesProcessed << "\t" << cloud_xyz_ptr->size() << "\t"<<
+//								processingTime
+//								<< "\t"<< score3D << "\t" << bestScore << "\t1\n";
+//		}
+//	}
+
+
+    if(noOfFramesProcessed<500){
+    	*accuracyLogs << this->noOfFramesProcessed << "\t" 	<< xtranslation	<< "\t" << ytranslation	<< "\t" <<	ztranslation	<< "\t"
+    														<<	xRot << "\t"	<< yRot << "\t" << zRot << "\t" << bestScore << "\t" << twoD << "\t\n";
+    }
+	//-------------------------------------------------------------------------------------------
 
     static tf::TransformBroadcaster br;
      tf::Transform transform;
@@ -222,6 +233,7 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
      br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "/openni_rgb_optical_frame",
     		 modelPublisher->getTopic()));
 
+     calculateHomogeneousMatrix(xRot,yRot,zRot,(*(bestTransformation))(12),(*(bestTransformation))(13),(*(bestTransformation))(14),tempHomogenousMatrix,0);
      calculateHomogeneousMatrix(xRot,yRot,zRot,xtranslation,ytranslation,ztranslation,tempHomogenousMatrix,0);
      BRICS_3D::PointCloud3D *finalModel = new BRICS_3D::PointCloud3D();
  	for(unsigned int i=0; i<cube3D->getSize();i++){
@@ -236,11 +248,15 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 			tempHomogenousMatrix(0), tempHomogenousMatrix(4), tempHomogenousMatrix(8),
 			tempHomogenousMatrix(1), tempHomogenousMatrix(5), tempHomogenousMatrix(9),
 			tempHomogenousMatrix(2), tempHomogenousMatrix(6), tempHomogenousMatrix(10),
-			xtranslation,ytranslation,ztranslation);
+			tempHomogenousMatrix(12), tempHomogenousMatrix(13), tempHomogenousMatrix(14));
  	finalModel->homogeneousTransformation(homogeneousTrans);
- //	pclTypecaster.convertToPCLDataType(estimated_model_ptr,finalModel);
+  	pclTypecaster.convertToPCLDataType(estimated_model_ptr,finalModel);
 	estimated_model_ptr->header.frame_id = "/openni_rgb_optical_frame";
 	modelPublisher->publish(*estimated_model_ptr);
+
+
+
+
 
 	delete in_cloud;
 	delete finalModel;
@@ -253,9 +269,9 @@ void ModelFitting::kinectCloudCallback(const sensor_msgs::PointCloud2 &cloud){
 
 	this->noOfFramesProcessed++;
 
-	if(noOfFramesProcessed>100){
+	if(noOfFramesProcessed>10){
 		ROS_WARN("Logging Completed");
-//		exit(0);
+		exit(0);
 	}
 
 }

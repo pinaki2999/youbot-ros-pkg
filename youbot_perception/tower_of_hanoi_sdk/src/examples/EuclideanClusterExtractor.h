@@ -77,11 +77,11 @@ private:
 	/*
 	 * filestreams to save the logs
 	 */
-	std::ofstream *processingLogs;
-	std::ofstream *frameDelayLogs;
+//	std::ofstream *processingLogs;
+//	std::ofstream *frameDelayLogs;
 
-	boost::timer processingTimer;
-	boost::timer frameDelayTimer;
+//	boost::timer processingTimer;
+//	boost::timer frameDelayTimer;
 
 public:
 	EuclideanClusterExtractor();
@@ -188,15 +188,15 @@ public:
 			int minClusterSize, int maxClusterSize, float clusterTolerance);
 
 
-    void setFrameDelayLogs(std::ofstream *frameDelayLogs)
-    {
-        this->frameDelayLogs = frameDelayLogs;
-    }
-
-    void setProcessingLogs(std::ofstream *processingLogs)
-    {
-        this->processingLogs = processingLogs;
-    }
+//    void setFrameDelayLogs(std::ofstream *frameDelayLogs)
+//    {
+//        this->frameDelayLogs = frameDelayLogs;
+//    }
+//
+//    void setProcessingLogs(std::ofstream *processingLogs)
+//    {
+//        this->processingLogs = processingLogs;
+//    }
 
 };
 

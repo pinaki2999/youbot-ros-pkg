@@ -112,24 +112,24 @@ int main(int argc, char* argv[]){
 
 		//initialize the object cluster extractor
 		objectClusterExtractor[i].initializeExtractor(maxNoOfObjects,extractedClusterPublisher[i],
-																				60,4000, 0.01);
+																				100,6000, 0.01);
 
 
-		std::stringstream logFileName;
-		logFileName << argv[argc-1]<< "processing_" << i+1 << ".log";
-		processingLogs[i].open(logFileName.str().c_str());
-
-		logFileName.str("");
-		logFileName << argv[argc-1] << "frame_delay_" << i+1 << ".log";
-		frameDelayLogs[i].open(logFileName.str().c_str());
-
-		frameDelayLogs[i].setf(std::ios::fixed, std::ios::floatfield);
-		frameDelayLogs[i].precision(9);
-		processingLogs[i].setf(std::ios::fixed, std::ios::floatfield);
-		processingLogs[i].precision(9);
-
-		objectClusterExtractor[i].setProcessingLogs(&processingLogs[i]);
-		objectClusterExtractor[i].setFrameDelayLogs(&frameDelayLogs[i]);
+//		std::stringstream logFileName;
+//		logFileName << argv[argc-1]<< "processing_" << i+1 << ".log";
+//		processingLogs[i].open(logFileName.str().c_str());
+//
+//		logFileName.str("");
+//		logFileName << argv[argc-1] << "frame_delay_" << i+1 << ".log";
+//		frameDelayLogs[i].open(logFileName.str().c_str());
+//
+//		frameDelayLogs[i].setf(std::ios::fixed, std::ios::floatfield);
+//		frameDelayLogs[i].precision(9);
+//		processingLogs[i].setf(std::ios::fixed, std::ios::floatfield);
+//		processingLogs[i].precision(9);
+//
+//		objectClusterExtractor[i].setProcessingLogs(&processingLogs[i]);
+//		objectClusterExtractor[i].setFrameDelayLogs(&frameDelayLogs[i]);
 
 	}
 
